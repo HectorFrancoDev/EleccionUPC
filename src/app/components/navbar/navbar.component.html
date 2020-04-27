@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+  <a class="navbar-brand" [routerLink]="[ '/home']">
+    <img src="./assets/logo-upc.png" width="200" height="80" alt="">
+  </a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLogin()">
+        <a class="nav-link" href="#" [routerLink]="[ '/home']">Inicio <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLogin()">
+        <a class="nav-link" href="#" [routerLink]="[ '/candidatos']">Candidatos</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLogin()">
+        <a class="nav-link" href="#" [routerLink]="[ '/votar']">Votar</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLogin()">
+        <a class="nav-link" [routerLink]="[ '/resultados']">Resultados</a>
+      </li>
+    </ul>
+
+    <ng-container *ngIf="!isLogin(); else logged">
+      <a class="btn btn-dark" [routerLink]="['/registro']" *ngIf="!isLogin()">Registrate</a>
+      <a class="btn btn-danger" [routerLink]="['/ingresar']" *ngIf="!isLogin()">Ingresa</a>
+    </ng-container>
+
+    <ng-template #logged>
+        <a class="btn btn-outline-danger" [routerLink]="['/home']" *ngIf="isLogin()" (click)="logout()">Salir</a>
+    </ng-template>
+    
+
+
+  </div>
+
+</nav>
