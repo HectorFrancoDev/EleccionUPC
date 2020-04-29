@@ -1,0 +1,305 @@
+<div class="card text-white bg-dark mb-3">
+  <div class="card-header">Consola administrador</div>
+  <div class="card-body">
+    <h5 class="card-title">!Hola! <small> Carga los datos de la Jornada Electoral</small></h5>
+    <p class="card-text">
+    </p>
+    <ol>
+      <li>Crear la jornada electoral <small>(nombre) y (proposito)</small>. </li>
+      <li>Cargar los votantes.</li>
+      <li>Ingresar los candidatos.</li>
+      <li>Inicia la jornada electoral con el tiempo estipulado.</li>
+      <li>Finaliza la jornada electoral.</li>
+      <li>Mostrar resultados.</li>
+      <li>Mostrar ganador.</li>
+    </ol>
+  </div>
+</div>
+
+<ng-container *ngIf="stepState() == 1; else else_1">
+  <div class="card text-white bg-secondary mb-3">
+    <div class="card-header">1. Crear Jornada electoral</div>
+    <div class="card-body">
+      <h5 class="card-title">
+      </h5>
+
+      <form (ngSubmit)="onCreateBallot(form)" #form="ngForm">
+        <div class="row">
+
+          <div class="col-sm-4 my-1">
+            <label for="name">Nombre</label>
+            <div *ngIf="form.submitted && form.controls['name'].errors" class="text-danger animated fadeIn">
+              Ingresa el nombre
+            </div>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" [(ngModel)]="ballot.name"
+              required>
+          </div>
+          <div class="col-sm-7 my-1">
+            <label for="proposal">Proposito</label>
+            <div *ngIf="form.submitted && form.controls['proposal'].errors" class="text-danger animated fadeIn">
+              Ingresa la descripción
+            </div>
+            <input type="text" class="form-control" id="proposal" name="proposal" placeholder="Proposito"
+              [(ngModel)]="ballot.proposal" required>
+          </div>
+
+          <div class="col-auto my-1">
+            <input type="submit" class="btn btn-danger" value="Crear contrato">
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #else_1>
+  <div class="card text-white bg-secondary mb-3 disabled">
+    <div class="card-header">1. Crear Jornada electoral</div>
+    <div class="card-body">
+      <h5 class="card-title">
+      </h5>
+
+      <form (ngSubmit)="onCreateBallot(form)" #form="ngForm">
+        <div class="row">
+
+          <div class="col-sm-4 my-1">
+            <label for="name">Nombre</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" [(ngModel)]="ballot.name"
+              required>
+          </div>
+          <div class="col-sm-7 my-1">
+            <label for="proposal">Proposito</label>
+            <input type="text" class="form-control" id="proposal" name="proposal" placeholder="Proposito"
+              [(ngModel)]="ballot.proposal" required>
+          </div>
+
+          <div class="col-auto my-1">
+            <input type="submit" class="btn btn-danger" value="Crear contrato">
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+</ng-template>
+
+
+
+<div class="row row-cols-1 row-cols-md-2">
+
+
+  <ng-container *ngIf="stepState() == 2; else else_2">
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">2. Cargar Votantes</h5>
+          <p class="card-text">
+            Carga la lista de votantes disponibles para esta jornada de votación de la universidad.
+          </p>
+          <button type="button" class="btn btn-danger" (click)="onLoadVoters()">Cargar votantes</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #else_2>
+    <div class="col-sm-6 disabled">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">2. Cargar Votantes</h5>
+          <p class="card-text">
+            Carga la lista de votantes disponibles para esta jornada de votación de la universidad.
+          </p>
+          <button type="button" class="btn btn-danger">Cargar votantes</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+
+  <ng-container *ngIf="stepState() == 3; else else_3">
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">3. Ingresar candidatos</h5>
+
+          <form (ngSubmit)="onCreateCandidate(form)" #form="ngForm">
+            <div class="form-group">
+              <label for="candidateName">Nombre del candidato</label>
+              <div *ngIf="form.submitted && form.controls['candidate'].errors" class="text-danger animated fadeIn">
+                Ingresa la descripción
+              </div>
+              <input type="text" id="candidateName" class="form-control" aria-describedby="emailHelp"
+                placeholder="nombre de candidato" name="candidate" [(ngModel)]="candidate" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Cargar candidato</button>
+          </form>
+
+          <button class="btn btn-success" (click)="finishCandidates()">Finalizar inscripción</button>
+
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #else_3>
+    <div class="col-sm-6 disabled">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">3. Ingresar candidatos</h5>
+          <form>
+
+            <div class="form-group">
+              <label for="candidateName">Nombre del candidato</label>
+              <input type="text" id="candidateName" class="form-control" aria-describedby="emailHelp"
+                placeholder="nombre de candidato">
+            </div>
+            <button type="submit" class="btn btn-danger">Cargar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</div>
+
+<div class="row row-cols-1 row-cols-md-2">
+
+  <ng-container *ngIf="stepState() == 4; else else_4">
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">4. Iniciar jornada electoral</h5>
+
+          <form (ngSubmit)="onStartBallot(form)" #form="ngForm">
+            <div class="form-group">
+              <label for="candidateName">Tiempo disponible de la jornada electoral <small>(minutos)</small></label>
+              <div *ngIf="form.submitted && form.controls['ballotTime'].errors" class="text-danger animated fadeIn">
+                Ingresa el tiempo en minutos
+              </div>
+              <input type="number" id="ballotTime" class="form-control" aria-describedby="emailHelp"
+                placeholder="minutos" name="ballotTime" [(ngModel)]="ballotTime" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Iniciar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #else_4>
+    <div class="col-sm-6 disabled">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">4. Iniciar jornada electoral</h5>
+          <form>
+
+            <div class="form-group">
+              <label for="candidateName">Tiempo disponible de la jornada electoral <small>(minutos)</small></label>
+              <input type="number" id="ballotTime" class="form-control" aria-describedby="emailHelp"
+                placeholder="minutos">
+            </div>
+            <button type="submit" class="btn btn-danger">Iniciar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+
+  <ng-container *ngIf="stepState() == 5; else else_5">
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">5. Finalizar jornada electoral</h5>
+          <p class="card-text">
+            FInaliza la jornada electoral una vez se termine el tiempo establecido
+          </p>
+          <button type="button" class="btn btn-danger" (click)="onFinishBallot()">Finalizar votación</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #else_5>
+    <div class="col-sm-6 disabled">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">5. Finalizar jornada electoral</h5>
+          <p class="card-text">
+            FInaliza la jornada electoral una vez se termine el tiempo establecido
+          </p>
+          <button type="button" class="btn btn-danger" (click)="onFinishBallot()">Finalizar votación</button>
+        </div>
+      </div>
+    </div>
+
+  </ng-template>
+
+</div>
+
+
+<div class="row row-cols-1 row-cols-md-2">
+
+
+  <ng-container *ngIf="stepState() >= 5; else else_6">
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">6. Mostrar Resultados</h5>
+          <p class="card-text">
+            Mira como quedaron los resultados de la votación.
+          </p>
+          <button type="button" class="btn btn-danger" (click)="onShowBallotResults()">Mostrar resultados</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #else_6>
+    <div class="col-sm-6 disabled">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">6. Mostrar Resultados</h5>
+          <p class="card-text">
+            Mira como quedaron los resultados de la votación.
+          </p>
+          <button type="button" class="btn btn-danger" (click)="onShowBallotResults()">Mostrar resultados</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+
+
+  <ng-container *ngIf="stepState() >= 5; else else_7">
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">7. Mostrar ganador</h5>
+          <p class="card-text">
+            Mira que candidato ganó la jornada electoral
+          </p>
+          <button type="button" class="btn btn-danger" (click)="onShowBallotWinner()">Mostrar Ganador</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #else_7>
+    <div class="col-sm-6 disabled">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">7. Mostrar ganador</h5>
+          <p class="card-text">
+            Mira que candidato ganó la jornada electoral
+          </p>
+          <button type="button" class="btn btn-danger" (click)="onShowBallotWinner()">Mostrar Ganador</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</div>

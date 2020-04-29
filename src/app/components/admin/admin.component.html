@@ -1,31 +1,23 @@
-<h2 class="wrapper fadeInDown">INGRESAR</h2>
+<h2 class="wrapper fadeInDown">ADMINISTRADOR</h2>
 
 <div class="wrapper fadeInDown">
   <div id="formContent">
-    <!-- ? Icono -->
-    <div class="fadeIn first">
-      <img src="./assets/LogoVertical.jpg" width="150px" height="150px" id="icon"
-        alt="Universidad Piloto de Colombia" />
-    </div>
-
-    <!-- ? Ingresar -->
     <form (ngSubmit)="onLogin(form)" #form="ngForm">
-
-
       <div *ngIf="form.submitted && form.controls['email'].errors" class="text-danger animated fadeIn">
-        Ingresa tu email</div>
-      <input type="email" id="email" class="fadeIn second" name="email" placeholder="E-mail" [(ngModel)]="user.email"
+        Ingresa tu email
+      </div>
+      <input type="email" id="email" class="fadeIn second" name="email" placeholder="E-mail" [(ngModel)]="admin.email"
         required>
 
       <div *ngIf="form.submitted && form.controls['password'].errors" class="text-danger animated fadeIn">
         Ingresa tu contraseña
       </div>
       <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña"
-        [(ngModel)]="user.password" required>
+        [(ngModel)]="admin.password" required>
+        
       <input type="submit" class="fadeIn fourth bg-dark" value="Ingresar" required>
     </form>
 
-    <a class="nav-link" [routerLink]="[ '/admin']">Consola administrador</a>
-
   </div>
 </div>
+

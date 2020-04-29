@@ -1,43 +1,34 @@
 import { Injectable } from '@angular/core';
-import * as Web3 from 'web3';
-import * as TruffleContract from 'truffle-contract';
-
-declare let require: any;
-declare let window: any;
-
-const tokenAbi = require('../../../../build/contracts/Ballot.json');
+import getWeb3 from '../../../../getContract/getWeb3';
+import BallotContract from '../../../../getContract/Ballot';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BallotService {
 
-  private web3Provider = null;
-  private contracts = {};
+  web3: any;
+  ballotContract: any;
+
+  account: any;
+  balance: any;
 
   constructor() {
-
-    if (typeof window.web3 !== 'undefined') {
-      this.web3Provider = window.web3.currentProvider;
-    } else {
-      this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-    }
-    window.web3 = new Web3(this.web3Provider);
+    this.onLoad();
   }
 
-  getAccountInfo() {
-    return new Promise((resolve, reject) => {
-      window.web3.eth.getCoinbase(function (err1, account) {
-        if (err1 === null) {
-          window.web3.eth.getBalance(account, function (err2, balance) {
-            if (err2 === null) {
-              return resolve({ fromAccount: account, balance: window.web3.fromWei(balance, 'ether') });
-            } else {
-              return reject('error!');
-            }
-          });
-        }
-      });
-    });
+  async onLoad() {
+    this.web3 = await getWeb3();
+    this.ballotContract = await BallotContract(this.web3.currentProvider);
+
+    console.log(this.ballotContract.createBallot);
+
+    const account = (await this.web3.eth.getAccounts())[0];
   }
+
+  async state(account: any, balance: any ) {
+    this.account = account;
+    this.balance = balance;
+  }
+
 }

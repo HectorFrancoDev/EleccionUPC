@@ -10,14 +10,17 @@ import { CandidatosComponent } from './components/candidatos/candidatos.componen
 import { RegistroComponent } from './components/registro/registro.component';
 import { ResultadosComponent } from './components/resultados/resultados.component';
 import { HerramientaComponent } from './components/herramienta/herramienta.component';
+import { IngresarComponent } from './components/ingresar/ingresar.component';
 
 // Services
 import { BallotService } from './services/ballot/ballot.service';
-import { IngresarComponent } from './components/ingresar/ingresar.component';
 
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { VotarComponent } from './components/votar/votar.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { AddCandidatesComponent } from './components/add-candidates/add-candidates.component';
+import { AdminConsoleComponent } from './components/admin-console/admin-console.component';
 
 
 @NgModule({
@@ -31,7 +34,10 @@ import { VotarComponent } from './components/votar/votar.component';
     ResultadosComponent,
     HerramientaComponent,
     IngresarComponent,
-    VotarComponent
+    VotarComponent,
+    AdminComponent,
+    AddCandidatesComponent,
+    AdminConsoleComponent
   ],
   imports: [
     BrowserModule,

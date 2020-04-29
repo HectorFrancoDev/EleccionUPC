@@ -13,80 +13,44 @@
   </p>
 </div>
 
-<!--<div class="card-deck">
-  <div class="card">
-    <!--<img src="../../../assets/vote.png" width="256" style="align-self: center;" alt="...">
-    <img src="../../../assets/vote.png" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Candidatos</h5>
-      <p class="card-text">
-        Revisa la información de los candidatos a Representante Estudiantil del programa.
-      </p>
-      <a href="#" class="btn btn-danger" [routerLink]="[ '/candidatos']">Candidatos</a>
-    </div>
+<div class="card">
+  <div class="card-header">
+    Sobre la herramienta
   </div>
+  <div class="card-body">
+    <h5 class="card-title">Prototipo de votación eléctronica sustentada con tecnología Blockchain</h5>
+    <p class="card-text">
+      A continuación se listan las tecnologías utilizadas para el desarrollo de la solución de votación eléctronica.
+    </p>
 
-  <div class="card">
-    <!--<img src="../../../assets/report.png" width="256" style="align-self: center;" alt="...">
-    <img src="../../../assets/report.png" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Resultados</h5>
-      <p class="card-text">
-        Una vez terminada la jornada electoral puedes consultar los resultados de la elección a
-        Representante Estudiantil.
-      </p>
-      <a href="#" class="btn btn-danger" [routerLink]="[ '/resultados']">Resultados</a>
-    </div>
+      <ul class="list-group list-group">
+        <li class="list-group-item">
+          <img src="./assets/ethereum-logo.png" width="60px" height="60px" alt="">
+          Ethereum
+        </li>
+        <li class="list-group-item">
+          <img src="./assets/angular.png" width="60px" height="60px" alt="">
+          Angular
+        </li>
+        <li class="list-group-item">
+          <img src="./assets/firebase.png" width="55px" height="55px" alt="">
+          Firebase
+        </li>
+        <li class="list-group-item">
+          <img src="./assets/metamask.png" width="60px" height="60px" alt="">
+          Metamask
+        </li>
+        <li class="list-group-item">
+          <img src="./assets/infura.png" width="60px" height="60px" alt="">
+          Infura
+        </li>
+        <li class="list-group-item">
+          <img src="./assets/truffle.png" width="60px" height="60px" alt="">
+          Truffle
+        </li>
+      </ul>
+
   </div>
+</div>
 
-  <div class="card">
-    <!--<img src="../../../assets/blockchain.png" width="256" style="align-self: center;" alt="...">
-    <img src="../../../assets/blockchain.png" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Sobre la herramienta</h5>
-      <p class="card-text">
-        Información sobre cómo fue construida la herramienta de votación electronica para la
-        Universidad Piloto de Colombia
-      </p>
-      <a href="#" class="btn btn-danger" [routerLink]="[ '/herramienta']">Más información</a>
-    </div>
-  </div> 
-
-
-</div>-->
-
-
-<!--<div class="card-deck" style="margin-bottom: 20px;">
-  <div class="card" style="width: 18rem;">
-    <div class="card-header">Candidatos</div>
-    <div class="card-body">
-      <p class="card-text">
-        Revisa la información de los candidatos a Representante Estudiantil del programa.
-      </p>
-      <a class="btn btn-danger" [routerLink]="[ '/candidatos']">Candidatos</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 18rem;">
-    <div class="card-header">Resultados</div>
-    <div class="card-body">
-      <p class="card-text">
-        Una vez terminada la jornada electoral puedes consultar los resultados de la elección a
-        Representante Estudiantil.
-      </p>
-      <a class="btn btn-danger" [routerLink]="[ '/resultados']">Resultados</a>
-    </div>
-  </div>
-
-  <div class="card" style="width: 18rem;">
-    <div class="card-header">Sobre la herramienta</div>
-    <div class="card-body">
-      <p class="card-text">
-        Información sobre cómo fue construida la herramienta de votación electronica para la
-        Universidad Piloto de Colombia.
-      </p>
-      <a class="btn btn-danger" [routerLink]="[ '/herramienta']">Más información</a>
-    </div>
-  </div>
-
-</div>-->
+<button class="btn btn-primary" (click)="addCandidate()">Click</button>

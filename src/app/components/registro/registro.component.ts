@@ -21,35 +21,8 @@ export class RegistroComponent implements OnInit {
 
   }
 
-  onRegister(form: NgForm) {
-    if (form.invalid) {
-      return;
-    }
-
-    Swal.fire({
-      title: 'Registrando',
-      text: 'Espere un momento...',
-    });
-    Swal.showLoading();
-
-    this.auth.registerNewUser(this.user)
-      .subscribe((token) => {
-        Swal.close();
-        Swal.fire({
-          icon: 'success',
-          title: 'Éxito',
-          text: 'Registro exitoso',
-        });
-
-      this.router.navigateByUrl('/ingresar');
-      },
-        (err) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error registro',
-            text: 'Usuario previamente registrado'
-          });
-        });
+  register() {
+    this.auth.register();
   }
 
 }

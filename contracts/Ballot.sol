@@ -22,7 +22,6 @@ contract Ballot {
      */
     struct Voter {
         string email;
-        string password;
         // Información de la votación
         bool voted;
         uint256 candidateIndex;
@@ -33,9 +32,9 @@ contract Ballot {
     /**
      * @dev atributos del contrato
      */
-    address private ballotAdmin;
     string private name;
     string private proposal;
+    address private ballotAdmin;
     uint256 private ballotEnd;
     uint256 private totalVoters;
     uint256 private totalDoneVotes;
@@ -68,7 +67,17 @@ contract Ballot {
     /**
      * @dev constructor()
      */
-    constructor(string memory _name, string memory _proposal) public {
+    /*
+    constructor() public {
+        ballotAdmin = msg.sender;
+    } */
+
+    /**
+     * @dev createBallot()
+     * @param _name name of the ballot
+     * @param _proposal proposal of the ballot
+     */
+    function createBallot(string memory _name, string memory _proposal) public {
         ballotAdmin = msg.sender;
         name = _name;
         proposal = _proposal;
@@ -90,7 +99,11 @@ contract Ballot {
         candidates.push(Candidate(_name, 0));
     }
 
-    function addVoter(string memory email, string memory password)
+    /**
+     * @dev función addCandidate()
+     * @param email of the candidate
+     */
+    function addVoter(string memory email)
         public
         inState(State.Created)
     {
@@ -103,7 +116,6 @@ contract Ballot {
 
         Voter storage voter = voters[msg.sender];
         voter.email = email;
-        voter.password = password;
 
         addedVoters[msg.sender] = true;
         addedEmail[email] = true;
@@ -121,9 +133,10 @@ contract Ballot {
         public
         inState(State.Created)
         checkBallotAdmin
+        checkCandidates
     {
         state = State.Voting;
-        candidates.push(Candidate("Blanco", 0));
+        candidates.push(Candidate("Voto en blanco", 0));
         ballotEnd = getTimestamp() + (durationHours * 1 minutes);
         emit voteStarted("Votación iniciada");
     }
@@ -305,6 +318,17 @@ contract Ballot {
         require(
             msg.sender == ballotAdmin,
             "Debe ser el administrador de la votación"
+        );
+        _;
+    }
+
+    /**
+     * @dev Modifier: verifies the candidates array is not empty
+     */
+    modifier checkCandidates() {
+        require(
+            candidates.length > 1,
+            "Debe haber más de un candidato"
         );
         _;
     }

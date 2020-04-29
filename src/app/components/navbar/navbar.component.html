@@ -25,9 +25,8 @@
       </li>
     </ul>
 
-    <ng-container *ngIf="!isLogin(); else logged">
-      <a class="btn btn-dark" [routerLink]="['/registro']" *ngIf="!isLogin()">Registrate</a>
-      <a class="btn btn-danger" [routerLink]="['/ingresar']" *ngIf="!isLogin()">Ingresa</a>
+    <ng-container *ngIf="!isLogin(); else logged"> 
+      <a class="btn btn-danger" [routerLink]="['/ingresar']" *ngIf="!isLogin()">Ingresa aquí</a>
     </ng-container>
 
     <ng-template #logged>
