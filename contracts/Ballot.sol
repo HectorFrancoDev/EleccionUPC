@@ -1,11 +1,13 @@
-pragma solidity >=0.4.22 <0.7.0;
+// pragma solidity >=0.4.22 <0.7.0;
+pragma solidity ^0.4.24;
 
 
 /**
  * @title Ballot.sol: Smart Contract de elección de Representante Estudiantil
  * @author Camilo Andrés Rodríguez Burgos
  * @author Hector Oswaldo Franco Másmela
- * @notice Smart Contract de una votación de Representante Estudiantil de la Universidad Piloto de Colombia
+ * @notice Smart Contract de una votación de Representante
+           Estudiantil de la Universidad Piloto de Colombia
  */
 
 contract Ballot {
@@ -32,14 +34,14 @@ contract Ballot {
     /**
      * @dev atributos del contrato
      */
-    string private name;
-    string private proposal;
-    address private ballotAdmin;
-    uint256 private ballotEnd;
-    uint256 private totalVoters;
-    uint256 private totalDoneVotes;
+    string public name;
+    string public proposal;
+    address public ballotAdmin;
+    uint256 public ballotEnd;
+    uint256 public totalVoters;
+    uint256 public totalDoneVotes;
 
-    Candidate[] private candidates;
+    Candidate[] public candidates;
 
     /**
      * @dev Mappings verificadores de los voters
@@ -48,9 +50,9 @@ contract Ballot {
     mapping(address => bool) private addedVoters;
     mapping(string => bool) private addedEmail;
 
-    enum State {Created, Voting, Ended}
+    enum State {Initial, Created, Voting, Ended}
 
-    State private state;
+    State public state;
 
     /**
      * @dev Eventos del contrato
@@ -65,25 +67,21 @@ contract Ballot {
     event showBallotInfo(string name, string proposal);
 
     /**
-     * @dev constructor()
-     */
-    /*
-    constructor() public {
-        ballotAdmin = msg.sender;
-    } */
-
-    /**
      * @dev createBallot()
      * @param _name name of the ballot
      * @param _proposal proposal of the ballot
      */
-    function createBallot(string memory _name, string memory _proposal) public {
+    function createBallot(string memory _name, string memory _proposal)
+        public
+    {
+        require(state == State.Initial, "Votación creada previamente");
         ballotAdmin = msg.sender;
         name = _name;
         proposal = _proposal;
 
         totalVoters = 0;
         totalDoneVotes = 0;
+        state = State.Created;
     }
 
     /**
@@ -103,10 +101,7 @@ contract Ballot {
      * @dev función addCandidate()
      * @param email of the candidate
      */
-    function addVoter(string memory email)
-        public
-        inState(State.Created)
-    {
+    function addVoter(string memory email) public inState(State.Created) {
         require(
             !getAddedVoter(msg.sender),
             "Ya se registró un usuario con el address ingresado"
@@ -127,17 +122,17 @@ contract Ballot {
 
     /**
      * @dev función startBallot()
-     * @param durationHours hours that will be available the contract
+     * @param durationMinutes Minutes that will be available the contract
      */
-    function startBallot(uint256 durationHours)
+    function startBallot(uint256 durationMinutes)
         public
         inState(State.Created)
         checkBallotAdmin
         checkCandidates
     {
-        state = State.Voting;
         candidates.push(Candidate("Voto en blanco", 0));
-        ballotEnd = getTimestamp() + (durationHours * 1 minutes);
+        ballotEnd = getTimestamp() + (durationMinutes * 1 minutes);
+        state = State.Voting;
         emit voteStarted("Votación iniciada");
     }
 
@@ -148,7 +143,7 @@ contract Ballot {
     function doVote(uint256 candidateIndex) public inState(State.Voting) {
         require(
             getTimestamp() < ballotEnd,
-            "Se sobrepasó el tiempo de la votación"
+            "Se pasó el tiempo habilitado para votar"
         );
         require(getAddedVoter(msg.sender), "No está registrado en la votación");
         require(!voters[msg.sender].voted, "Ya votó previamente");
@@ -326,10 +321,7 @@ contract Ballot {
      * @dev Modifier: verifies the candidates array is not empty
      */
     modifier checkCandidates() {
-        require(
-            candidates.length > 1,
-            "Debe haber más de un candidato"
-        );
+        require(candidates.length > 1, "Debe haber más de un candidato");
         _;
     }
 }

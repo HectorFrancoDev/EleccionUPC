@@ -79,9 +79,29 @@ export class AuthService {
   register() {
     this.voters.forEach(voter => {
       this.reg(voter)
-        .subscribe((token) => {  },
-         (err) =>  { });
+        .subscribe((token) => { },
+          (err) => { });
     });
+  }
+
+  // "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4ODQ4YjVhZmYyZDUyMDEzMzFhNTQ3ZDE5MDZlNWFhZGY2NTEzYzgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZWxlY3Rpb251cGMiLCJhdWQiOiJlbGVjdGlvbnVwYyIsImF1dGhfdGltZSI6MTU4ODMwMTk1OSwidXNlcl9pZCI6Ilo0UmNQQkMxTTZNR0h0QURjWVJmV2o5OWdEdDEiLCJzdWIiOiJaNFJjUEJDMU02TUdIdEFEY1lSZldqOTlnRHQxIiwiaWF0IjoxNTg4MzAxOTU5LCJleHAiOjE1ODgzMDU1NTksImVtYWlsIjoiaGVjdG9yLWZyYW5jbzJAdXBjLmVkdS5jbyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJoZWN0b3ItZnJhbmNvMkB1cGMuZWR1LmNvIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.hIgBTXTQ1gV_D4e4_bz5QDcMZ8ZReL3VAFAa0cNRpgVr_9SH9VSYBndkyYbmlhoSdg9SM6XlYEbALEGr-Y0KznPAlzs9iv6WHMjR4NCRHmW9K1Pg8-n03RLDgfd1iFnunVieMK0aikUrpv8CyyX1rLTNKwRX0SaPcl6a-bLpM0byKO2tZqJEBnltkjaahwQ3xpv5CC31yAnV2F8D-LJV1iPrqXXgAEj-Vfa87LNI60qdoqLOZG8YdXXQB1OuckfQsIK3wCqJ1cf3W4clL6JeoT7cblq6SBzjCh2BEkwBtvzVGgc0n16PRhR-B6dQZP0hq5K3Unq0R_pnZxLnb4SVJg"
+  registerExample() {
+    const authData = {
+      email: 'hector19971997@hotmail.com',
+      password: 'abc123',
+      returnSecureToken: true
+    };
+
+    return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`, authData);
+  }
+
+  sendEmailVerification(idToken) {
+    const verifyObject = {
+      requestType: 'VERIFY_EMAIL',
+      idToken
+    };
+
+    return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${this.apiKey}`, verifyObject);
   }
 
   private reg(voter: any) {
