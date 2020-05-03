@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import getWeb3 from '../../../../getContract/getWeb3';
 import BallotContract from '../../../../getContract/Ballot';
 import { BallotFunctions } from '../../../../getContract/BallotFunctions';
+import Swal from 'sweetalert2';
 
 
 @Injectable({
@@ -39,12 +40,36 @@ export class BallotService {
     return await this.web3;
   }
 
+  async getContractBalance() {
+    let contractBalance;
+
+    await this.ballotFunction.getContractBalance()
+      .then(async(balance: any) => contractBalance = (await balance))
+      .catch(async(error) => console.log(error));
+
+    return contractBalance.toNumber();
+  }
+
+  depositBalance() {
+    this.ballotFunction.deposit()
+    .then((data) => console.log(data))
+    .catch((error) => console.log(error));
+  }
+
   async getAccount() {
     let account;
 
     await this.onLoad()
       .then(async (web3) => account = (await web3.eth.getAccounts())[0])
-      .catch(async (error) => console.error(error));
+      .catch(async (error) => {
+        console.error(error)
+        Swal.fire({
+          icon: 'error',
+          title: 'Cambiar a la red de RINKEBY',
+          text: 'La votación solo podrá efectuarse en esa red'
+        });
+
+      });
 
     return account.toString();
   }

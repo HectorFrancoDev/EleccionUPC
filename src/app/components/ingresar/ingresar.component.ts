@@ -15,7 +15,8 @@ export class IngresarComponent implements OnInit {
 
   user: UserModel = new UserModel();
 
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(private auth: AuthService, private router: Router) {
+  }
 
   ngOnInit() {
   }
@@ -33,17 +34,33 @@ export class IngresarComponent implements OnInit {
     Swal.showLoading();
 
     this.auth.login(this.user)
-      .subscribe((token) => {
-        Swal.close();
-        this.router.navigateByUrl('/candidatos');
+      .subscribe((token: any) => {
+        this.validEmail(token);
       },
-        (err) => {
+        (error) => {
           Swal.fire({
             icon: 'error',
             title: 'Error de autentificación',
             text: 'Usuario no encontrado'
           });
         });
+  }
+
+
+  private validEmail(token: any) {
+    this.auth.getUserState(token.idToken)
+    .subscribe((user: any) => {
+      if (user.users[0].emailVerified) {
+        Swal.close();
+        this.router.navigateByUrl('/candidatos');
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Usuario no verificado',
+          text: 'Por favor revisa tu e-mail y verifica tu cuenta'
+        });
+      }
+    }, (error) => console.log(error));
   }
 
 }

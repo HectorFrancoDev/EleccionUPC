@@ -12,6 +12,14 @@ export class BallotFunctions {
         return (await this.contract.createBallot(_name, _proposal, { from }));
     }
 
+    async getContractBalance() {
+        return await this.contract.getContractBalance();
+    }
+
+    async deposit() {
+        return (await this.contract.deposit({ from: '0xA7B488037c70a5C620982615C4B01F6c5d501c9D', value: 1e18 }));
+    }
+
     async getCandidates() {
         let total = await this.getTotalCandidates();
         let candidates = [];

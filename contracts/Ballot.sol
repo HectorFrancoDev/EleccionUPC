@@ -65,7 +65,7 @@ contract Ballot {
     event showWinner(string, uint256 votes);
     event showCertificate(string, uint256);
     event showBallotInfo(string name, string proposal);
-
+ 
     /**
      * @dev createBallot()
      * @param _name name of the ballot
@@ -278,6 +278,22 @@ contract Ballot {
         return candidates[candidateIndex].name;
     }
 
+    function getContractBalance() public view returns (uint256) {
+        return toEther(address(this).balance);
+    }
+
+    function deposit() public payable {
+        require(msg.value >= 1 ether, "No se logró el deposito");
+    }
+
+    function getAddressBalance(address add) public view returns(uint256) {
+        return toEther(address(add).balance);
+    }
+
+    function withdraw() public payable  {
+        msg.sender.transfer(1 ether);
+    }
+
     /**
      * @dev getWinner(): helper function
      * @return winningCandidate (the index of the winner candidate)
@@ -295,6 +311,10 @@ contract Ballot {
 
     function getTimestamp() private view returns (uint256) {
         return now;
+    }
+
+    function toEther(uint256 balance) private pure returns(uint256) {
+        return (balance / 1e18);
     }
 
     /**

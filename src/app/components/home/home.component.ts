@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BallotService } from '../../services/ballot/ballot.service';
 import { AuthService } from '../../services/auth/auth.service';
+import { VotersService } from '../../services/voters/voters.service';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +18,7 @@ export class HomeComponent implements OnInit {
 
   candidates: any[];
 
-  constructor(private ballot: BallotService, private auth: AuthService) {
+  constructor(private ballot: BallotService, private auth: AuthService, private voterService: VotersService) {
     this.getAccount();
     //this.getCandidates();
   }
@@ -30,15 +31,16 @@ export class HomeComponent implements OnInit {
     this.account = await this.ballot.getAccount();
   }
 
-  registerExample() {
-    this.auth.registerExample()
-      .subscribe((token: any) => {
-        console.log(token);
-        this.auth.sendEmailVerification(token.idToken)
-          .subscribe((response: any) => {
-            console.log(response);
-          }, (error) => console.log(error));
-      }, (error) => console.log(error));
+  loadVoters() {
+    this.auth.register();
+  }
+
+  async getContractBalance() {
+    console.log((await this.ballot.getContractBalance()));
+  }
+
+  async deposit() {
+    await this.ballot.depositBalance();
   }
 
 }

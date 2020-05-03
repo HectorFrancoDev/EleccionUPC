@@ -10,6 +10,10 @@
       {
         "source": "**",
         "destination": "/index.html"
+      },
+      {
+        "source": "https://electionupc.com/__/auth/action?mode=''&oobCode=''&apiKey=''",
+        "destination": "https://electionupc.com/ingresar"
       }
     ]
   }
