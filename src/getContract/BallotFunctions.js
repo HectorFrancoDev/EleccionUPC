@@ -20,6 +20,10 @@ export class BallotFunctions {
         return (await this.contract.deposit({ from: '0xA7B488037c70a5C620982615C4B01F6c5d501c9D', value: 1e18 }));
     }
 
+    async withdraw() {
+        return (await this.contract.withdraw({from: '0x7693ca71F284BdFa2237fC5226741247231333BD'}));
+    }
+
     async getCandidates() {
         let total = await this.getTotalCandidates();
         let candidates = [];
@@ -46,3 +50,4 @@ export class BallotFunctions {
         })
     }
 }
+

@@ -11,6 +11,9 @@ export class AuthService {
 
   apiKey = 'AIzaSyBoLdMxJ4a4GvgzJUpt0CmNqNRLB6o907w';
   userToken: string;
+  adminToken: string;
+  logged: boolean;
+  loggedAdmin: boolean;
 
   voters = [] = [];
   votersPrueba = [
@@ -26,7 +29,7 @@ export class AuthService {
       password: 'gf8620PM',
       returnSecureToken: true
     },
-  ]
+  ];
 
   constructor(private http: HttpClient, private voterService: VotersService) {
     this.leerToken();
@@ -49,23 +52,7 @@ export class AuthService {
       returnSecureToken: true
     };
 
-    return this.http.post(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.apiKey}`,
-      authData
-    ).pipe(
-      map((token: any) => {
-        this.getUserState(token.idToken)
-          .subscribe((userFirebase: any) => {
-            if (userFirebase.users[0].emailVerified) {
-              this.guardarToken(token['idToken']);
-            } else {
-              return;
-            }
-          });
-        return token;
-      })
-    );
-
+    return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.apiKey}`, authData);
   }
 
   register() {
@@ -84,6 +71,7 @@ export class AuthService {
     return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${this.apiKey}`, { idToken });
   }
 
+
   sendEmailVerification(idToken) {
     const verifyObject = {
       requestType: 'VERIFY_EMAIL',
@@ -97,20 +85,32 @@ export class AuthService {
     this.userToken = undefined;
   }
 
-  isLogin(): boolean {
-    if (this.userToken !== undefined && this.userToken.length > 2) {
-      return true;
+  isAdmin(): boolean {
+    if (this.adminToken !== undefined && this.adminToken.length > 2) {
+      this.loggedAdmin = true;
+      return this.loggedAdmin;
     }
     return false;
   }
 
-  private reg(voter: any) {
-    return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`, voter);
+  isLogin(): boolean {
+    if (this.userToken !== undefined && this.userToken.length > 2) {
+      this.logged = true;
+      return this.logged;
+    }
+    return false;
   }
 
-  private guardarToken(idToken: string) {
+  guardarToken(idToken: string) {
     this.userToken = idToken;
     localStorage.setItem('token', idToken);
+    this.logged = true;
+  }
+
+  guardarAdminToken(idToken: string) {
+    this.adminToken = idToken;
+    localStorage.setItem('token', idToken);
+    this.loggedAdmin = true;
   }
 
   private leerToken() {
@@ -123,5 +123,8 @@ export class AuthService {
     return this.userToken;
   }
 
+  private reg(voter: any) {
+    return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`, voter);
+  }
 
 }

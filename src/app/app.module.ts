@@ -22,7 +22,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BallotService } from './services/ballot/ballot.service';
 
-
 @NgModule({
   declarations: [
     AppComponent,

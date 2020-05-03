@@ -20,12 +20,18 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/getContract",
+              "src/contracts"
             ],
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+                "src/getContract/getWeb3.js",
+                "src/getContract/Ballot.js",
+                "src/getContract/BallotFunctions.js"
+            ]
           },
           "configurations": {
             "production": {

@@ -15,12 +15,13 @@ export class AdminComponent implements OnInit {
 
   admin: UserModel = new UserModel();
 
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(private auth: AuthService,
+    private router: Router) { }
 
   ngOnInit() {
   }
 
-  onLogin(form: NgForm) {
+  async onLogin(form: NgForm) {
     if (form.invalid) {
       return;
     }
@@ -33,33 +34,53 @@ export class AdminComponent implements OnInit {
     Swal.showLoading();
 
     this.auth.login(this.admin)
-      .subscribe((token: Token) => {
+      .subscribe((token: any) => {
 
-        if (token.localId === 'OVzPk4yy5XV8dPjJwU9W6vC634X2') {
-          Swal.close();
-          this.router.navigateByUrl('console');
-        } else {
-          Swal.close();
+          if (token.localId === 'GDmfE9aZD1YRlIPP7wj80f2EnSE2') {
+            this.getUserState(token.idToken);
+          } else {
+            Swal.close();
+            Swal.fire({
+              icon: 'error',
+              title: 'Usuario no encontrado',
+              text: 'No estás registrado'
+            });
+          }
 
-          Swal.fire({
-            icon: 'error',
-            title: 'Error de autentificación',
-            text: 'Usuario no encontrado'
-          });
-          return;
-        }
-      },
-        (err) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error de autentificación',
-            text: 'Usuario no encontrado'
-          });
+      }, (error) => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Usuario no encontrado',
+          text: 'No estás registrado'
         });
+      });
+
   }
 
-}
+  private getUserState(idToken) {
+    this.auth.getUserState(idToken)
+      .subscribe((user: any) => {
+        const verify: boolean = user.users[0].emailVerified;
+        if (verify === true) {
+          this.auth.guardarAdminToken(idToken);
+          Swal.close();
+          if (this.auth.isAdmin() === true) {
+            this.router.navigateByUrl('/console');
+          }
+        } else {
 
-interface Token {
-  localId: string;
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'No Verificado',
+            text: 'No estás verificado, revisa tu e-mail por favor'
+          });
+
+        }
+      }, (error) => {
+        console.log(error);
+      });
+  }
+
 }

@@ -42,6 +42,7 @@ contract Ballot {
     uint256 public totalDoneVotes;
 
     Candidate[] public candidates;
+    address[] public votersAddress;
 
     /**
      * @dev Mappings verificadores de los voters
@@ -117,6 +118,7 @@ contract Ballot {
 
         voters[msg.sender].weight = 1;
 
+        votersAddress.push(msg.sender);
         totalVoters++;
     }
 

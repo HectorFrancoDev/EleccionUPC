@@ -30,6 +30,8 @@
     </ng-container>
 
     <ng-template #logged>
+        <p>Cuenta: <strong>{{account}}</strong></p>
+
         <a class="btn btn-outline-danger" [routerLink]="['/home']" *ngIf="isLogin()" (click)="logout()">Salir</a>
     </ng-template>
     

@@ -10,6 +10,7 @@ import { AdminConsoleComponent } from './components/admin-console/admin-console.
 
 // Guard
 import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin/admin.guard';
 
 const APP_ROUTES: Routes = [
     { path: 'home', component: HomeComponent },
@@ -19,7 +20,7 @@ const APP_ROUTES: Routes = [
     { path: 'votar', component: VotarComponent, canActivate: [ AuthGuard ] },
     { path: 'candidatos', component: CandidatosComponent, canActivate: [ AuthGuard ] },
     { path: 'resultados', component: ResultadosComponent, canActivate: [ AuthGuard ] },
-    { path: 'console', component: AdminConsoleComponent, canActivate: [ AuthGuard ] },
+    { path: 'console', component: AdminConsoleComponent, canActivate: [ AdminGuard ] },
     { path: '**', pathMatch: 'full', redirectTo: 'home'}
 ];
 

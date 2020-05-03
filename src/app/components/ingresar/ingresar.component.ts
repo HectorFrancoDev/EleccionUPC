@@ -4,7 +4,9 @@ import { UserModel } from '../../models/user.model';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 
+
 import Swal from 'sweetalert2';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @Component({
   selector: 'app-ingresar',
@@ -15,13 +17,14 @@ export class IngresarComponent implements OnInit {
 
   user: UserModel = new UserModel();
 
-  constructor(private auth: AuthService, private router: Router) {
+  constructor(private auth: AuthService,
+              private router: Router) {
   }
 
   ngOnInit() {
   }
 
-  onLogin(form: NgForm) {
+  async onLogin(form: NgForm) {
     if (form.invalid) {
       return;
     }
@@ -35,32 +38,41 @@ export class IngresarComponent implements OnInit {
 
     this.auth.login(this.user)
       .subscribe((token: any) => {
-        this.validEmail(token);
-      },
-        (error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error de autentificación',
-            text: 'Usuario no encontrado'
-          });
-        });
-  }
+        this.getUserState(token.idToken);
 
-
-  private validEmail(token: any) {
-    this.auth.getUserState(token.idToken)
-    .subscribe((user: any) => {
-      if (user.users[0].emailVerified) {
+      }, (error) => {
         Swal.close();
-        this.router.navigateByUrl('/candidatos');
-      } else {
         Swal.fire({
           icon: 'error',
-          title: 'Usuario no verificado',
-          text: 'Por favor revisa tu e-mail y verifica tu cuenta'
+          title: 'Usuario no encontrado',
+          text: 'No estás registrado'
         });
-      }
-    }, (error) => console.log(error));
+      });
+
   }
 
+  private getUserState(idToken) {
+    this.auth.getUserState(idToken)
+      .subscribe((user: any) => {
+        const verify: boolean = user.users[0].emailVerified;
+        if (verify === true) {
+          this.auth.guardarToken(idToken);
+          Swal.close();
+          if (this.auth.isLogin() === true) {
+            this.router.navigateByUrl('/candidatos');
+          }
+        } else {
+
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'No Verificado',
+            text: 'No estás verificado, revisa tu e-mail por favor'
+          })
+
+        }
+      }, (error) => {
+        console.log(error);
+      });
+  }
 }

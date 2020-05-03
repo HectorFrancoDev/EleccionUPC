@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { BallotModel } from '../../models/ballot.model';
 import { AuthService } from '../../services/auth/auth.service';
+import { BallotService } from '../../services/ballot/ballot.service';
 
 @Component({
   selector: 'app-admin-console',
@@ -14,11 +15,11 @@ export class AdminConsoleComponent implements OnInit {
 
   steps = 1;
 
-  ballot: BallotModel = new BallotModel();
+  ballotObject: BallotModel = new BallotModel();
   candidate: string;
   ballotTime: number;
 
-  constructor(private auth: AuthService) { }
+  constructor(private auth: AuthService, private ballot: BallotService) { }
 
   ngOnInit() {
   }
@@ -97,6 +98,14 @@ export class AdminConsoleComponent implements OnInit {
     // Swal.showLoading();
 
     this.steps++;
+  }
+
+  async deposit() {
+    await this.ballot.depositBalance();
+  }
+
+  async withdraw() {
+    await this.ballot.withdraw();
   }
 
   onShowBallotResults() {

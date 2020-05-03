@@ -1,4 +1,4 @@
-import BallotContract from '../build/contracts/Ballot.json';
+import BallotContract from '../contracts/Ballot.json';
 import contract from 'truffle-contract';
 
 export default async(provider) => {

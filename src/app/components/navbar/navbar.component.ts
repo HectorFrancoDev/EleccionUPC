@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth/auth.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Router } from '@angular/router';
+import { BallotService } from '../../services/ballot/ballot.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +11,13 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor(private auth: AuthService, private router: Router) {
+  account: string;
+
+  constructor(private auth: AuthService,
+              private router: Router,
+              private ballot: BallotService) {
+
+              this.getAccount();
   }
 
   ngOnInit() {
@@ -18,6 +25,14 @@ export class NavbarComponent implements OnInit {
 
   isLogin(): boolean {
     return this.auth.isLogin();
+  }
+
+  isAdminLogin() {
+    return this.auth.isAdmin();
+  }
+
+  async getAccount() {
+    this.account = await this.ballot.getAccount();
   }
 
   logout() {
