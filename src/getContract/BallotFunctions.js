@@ -8,23 +8,39 @@ export class BallotFunctions {
         return await this.contract.getBallotInfo();
     }
 
-    async createBallot(_name, _proposal, from) {
-        return (await this.contract.createBallot(_name, _proposal, { from }));
+    async createBallot(_name, _proposal, hola) {
+        return (await this.contract.createBallot(_name, _proposal, { from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
     }
 
-    async getContractBalance() {
-        return await this.contract.getContractBalance();
+    async addCandidate(_name, from) {
+        return (await this.contract.addCandidate(_name, { from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
     }
 
-    async deposit() {
-        return (await this.contract.deposit({ from: '0xA7B488037c70a5C620982615C4B01F6c5d501c9D', value: 1e18 }));
+    async startBallot(durationMinutes, from) {
+        return (await this.contract.startBallot(durationMinutes, { from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
     }
 
-    async withdraw() {
-        return (await this.contract.withdraw({from: '0x7693ca71F284BdFa2237fC5226741247231333BD'}));
+    async endBallot(from) {
+        return (await this.contract.endBallot({ from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
     }
 
-    async getCandidates() {
+    async getFinalResult(from) {
+        return (await this.contract.getFinalResult({ from }));
+    }
+
+    async winnerCandidate(from) {
+        return (await this.contract.winnerCandidate({ from }));
+    }
+
+    async addVoter(email, from) {
+        return (await this.contract.addVoter(email));
+    }
+
+    async doVote(index, from) {
+        return (await this.contract.doVote(index, { from }));
+    }
+
+    async getCandidates(from) {
         let total = await this.getTotalCandidates();
         let candidates = [];
 
@@ -49,5 +65,18 @@ export class BallotFunctions {
             }
         })
     }
+
+    async getContractBalance() {
+        return await this.contract.getContractBalance();
+    }
+
+    async deposit(from, value) {
+        return (await this.contract.deposit({ from, value }));
+    }
+
+    async withdraw(from) {
+        return (await this.contract.withdraw({ from }));
+    }
+
 }
 

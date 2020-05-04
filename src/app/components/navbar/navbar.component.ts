@@ -17,7 +17,6 @@ export class NavbarComponent implements OnInit {
               private router: Router,
               private ballot: BallotService) {
 
-              this.getAccount();
   }
 
   ngOnInit() {
@@ -31,8 +30,13 @@ export class NavbarComponent implements OnInit {
     return this.auth.isAdmin();
   }
 
-  async getAccount() {
-    this.account = await this.ballot.getAccount();
+  getAccount() {
+    this.ballot.getAccount().then((account) => this.account = account);
+    return this.account;
+  }
+
+  async getAccountShow() {
+    await this.getAccount();
   }
 
   logout() {

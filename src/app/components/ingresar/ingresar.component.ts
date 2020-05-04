@@ -4,9 +4,8 @@ import { UserModel } from '../../models/user.model';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 
-
 import Swal from 'sweetalert2';
-import { AuthGuard } from '../../guards/auth.guard';
+
 
 @Component({
   selector: 'app-ingresar',
@@ -28,7 +27,6 @@ export class IngresarComponent implements OnInit {
     if (form.invalid) {
       return;
     }
-
     Swal.fire({
       title: 'Ingresando',
       text: 'Espere un momento...',
@@ -52,6 +50,7 @@ export class IngresarComponent implements OnInit {
   }
 
   private getUserState(idToken) {
+
     this.auth.getUserState(idToken)
       .subscribe((user: any) => {
         const verify: boolean = user.users[0].emailVerified;
@@ -68,8 +67,7 @@ export class IngresarComponent implements OnInit {
             icon: 'error',
             title: 'No Verificado',
             text: 'No estás verificado, revisa tu e-mail por favor'
-          })
-
+          });
         }
       }, (error) => {
         console.log(error);

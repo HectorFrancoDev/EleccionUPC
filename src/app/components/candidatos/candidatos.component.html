@@ -1,124 +1,31 @@
 <div class="jumbotron">
-  <h2 class="display-5">Perfil de los Candidatos</h2>
+  <h2 class="display-5">Votar por el candidato</h2>
   <hr class="my-4">
   <p class="lead">
-    Revisa el perfil de los candidatos a ser el nuevo Representante Estudiantil de la facultad de
-    Ingeniería de Sistemas.
+    Elige tu candidato por Representante Estudiantil
   </p>
+
+
+
+  <button class="btn btn-info" (click)="checkEmailVoter()" *ngIf="!estado">Verificar disponibilidad</button>
+  <button class="btn btn-success" (click)="getCandidates()" *ngIf="estado">Cargar candidatos</button>
 </div>
 
-<div class="card-deck">
+<div class="row row-cols-1 row-cols-md-2">
 
-  <div class="card border-danger mb-3" style="width: 18rem;">
-    <img src="../../../assets/user.png" width="50" height="50" style="align-self: center;" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Pedro Gonzalez</h5>
-      <p class="card-text">
-        Soy un gran estusiasta de la Inteligencia Artificial y Machine Learning. <br> <br>
-        Entre mis multiples hobbies se encuentra el jugar futbol, los videojuegos de estrategica y los paseos largos
-      </p>
-
-      <div class="accordion" id="accordionExample">
-        <div class="card">
-          <div class="card-header" id="headingOne">
-            <h2 class="mb-0">
-              <button class="btn btn-success collapsed" type="button" data-toggle="collapse" data-target="#collapseOne"
-                aria-expanded="true" aria-controls="collapseOne">
-                Propuesta 1
-              </button>
-            </h2>
-          </div>
-
-          <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-            <div class="card-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
-              moon
-              officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-              wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et.
-              Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan
-              excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth
-              nesciunt
-              you probably haven't heard of them accusamus labore sustainable VHS.
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingTwo">
-            <h2 class="mb-0">
-              <button class="btn btn-success collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="false" aria-controls="collapseTwo">
-                Propuesta 2
-              </button>
-            </h2>
-          </div>
-          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-            <div class="card-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
-              moon
-              officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-              wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et.
-              Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan
-              excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth
-              nesciunt
-              you probably haven't heard of them accusamus labore sustainable VHS.
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header" id="headingThree">
-            <h2 class="mb-0">
-              <button class="btn btn-success collapsed" type="button" data-toggle="collapse"
-                data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                Propuesta 3
-              </button>
-            </h2>
-          </div>
-          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-            <div class="card-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
-              moon
-              officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3
-              wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et.
-              Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan
-              excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth
-              nesciunt
-              you probably haven't heard of them accusamus labore sustainable VHS.
-            </div>
-          </div>
-        </div>
+  <div class="col-sm-6" *ngFor="let candidate of candidates; let i of index">
+    <div class="card border-danger mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{candidate.name}}</h5>
       </div>
-    </div>
 
-    <div class="card-footer text-muted">
-      <button class="btn btn-danger">
-        Votar
-      </button>
-    </div>
+      <div class="card-footer text-muted">
+        <button class="btn btn-danger" (click)="doVote(i)">
+          Votar
+        </button>
+      </div>
 
-  </div>
-
-  <div class="card border-danger mb-3" style="width: 18rem;">
-    <img src="../../../assets/user.png" width="50" height="50" style="align-self: center;" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Ana Quintero</h5>
-      <p class="card-text">
-        Quiero hacer parte de la revolución Unipiloto. Sé que con el voto de ustedes vamos a lograr grandes
-        cosas para la facultad de Ingeniería de Sistemas. <br> <br>
-        Me gusta jugar League of Legends, y hago parte del equipo de danza folclorica de la Universidad.
-
-      </p>
-    </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">Propuesta 1</li>
-      <li class="list-group-item">Propuesta 2</li>
-      <li class="list-group-item">Propuesta 3</li>
-      <li class="list-group-item">Propuesta 4</li>
-      <li class="list-group-item">Propuesta 5</li>
-    </ul>
-    <div class="card-body">
-      <a href="#" class="btn btn-danger">VOTAR</a>
     </div>
   </div>
-
 
 </div>

@@ -113,18 +113,16 @@ export class AuthService {
     this.loggedAdmin = true;
   }
 
-  private leerToken() {
+  leerToken() {
     if (localStorage.getItem('token')) {
       this.userToken = localStorage.getItem('token');
     } else {
       this.userToken = '';
     }
-
     return this.userToken;
   }
 
   private reg(voter: any) {
     return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`, voter);
   }
-
 }

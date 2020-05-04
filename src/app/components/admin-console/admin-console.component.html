@@ -31,7 +31,7 @@
             <div *ngIf="form.submitted && form.controls['name'].errors" class="text-danger animated fadeIn">
               Ingresa el nombre
             </div>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" [(ngModel)]="ballot.name"
+            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" [(ngModel)]="ballotObject.name"
               required>
           </div>
           <div class="col-sm-7 my-1">
@@ -40,7 +40,7 @@
               Ingresa la descripción
             </div>
             <input type="text" class="form-control" id="proposal" name="proposal" placeholder="Proposito"
-              [(ngModel)]="ballot.proposal" required>
+              [(ngModel)]="ballotObject.proposal" required>
           </div>
 
           <div class="col-auto my-1">
@@ -84,8 +84,6 @@
   </div>
 
 </ng-template>
-
-
 
 <div class="row row-cols-1 row-cols-md-2">
 
@@ -217,7 +215,7 @@
           <p class="card-text">
             FInaliza la jornada electoral una vez se termine el tiempo establecido
           </p>
-          <button type="button" class="btn btn-danger" (click)="onFinishBallot()">Finalizar votación</button>
+          <button type="button" class="btn btn-danger" (click)="onEndBallot()">Finalizar votación</button>
         </div>
       </div>
     </div>
@@ -231,7 +229,7 @@
           <p class="card-text">
             FInaliza la jornada electoral una vez se termine el tiempo establecido
           </p>
-          <button type="button" class="btn btn-danger" (click)="onFinishBallot()">Finalizar votación</button>
+          <button type="button" class="btn btn-danger" (click)="onEndBallot()">Finalizar votación</button>
         </div>
       </div>
     </div>
@@ -302,4 +300,12 @@
     </div>
   </ng-template>
 
+</div>
+
+
+
+<div>
+  <button class="btn btn-success" (click)="logout()">
+    Salir de la consola
+  </button>
 </div>

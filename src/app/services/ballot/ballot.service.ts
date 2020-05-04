@@ -4,6 +4,7 @@ import BallotContract from '../../../getContract/Ballot';
 import { BallotFunctions } from '../../../getContract/BallotFunctions';
 import Swal from 'sweetalert2';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,12 +22,17 @@ export class BallotService {
   }
 
 
+
+
   async onLoad() {
     this.web3 = await getWeb3();
     this.ballotContract = await BallotContract(this.web3.currentProvider);
     this.ballotFunction = new BallotFunctions(this.ballotContract);
     this.account = (await this.web3.eth.getAccounts())[0];
-
+    
+    this.web3.currentProvider.publicConfigStore.on('update', async function (event) {
+      this.account = (await event.selectedAddress.toString());
+    });
     return this.web3;
   }
 
@@ -40,8 +46,8 @@ export class BallotService {
     return contractBalance.toNumber();
   }
 
-  async depositBalance() {
-    return await this.ballotFunction.deposit()
+  async depositBalance(value) {
+    return await this.ballotFunction.deposit(this.account, value)
       .then(async (trx: any) => {
         Swal.fire({
           title: 'Transaccion exitosa',
@@ -57,27 +63,30 @@ export class BallotService {
   }
 
   async withdraw() {
-    return await this.ballotFunction.withdraw()
-    .then(async (trx) => {
-      Swal.fire({
-        title: 'Ether recibido',
-        text: 'Recibiste un ether para poder votar'
+    return await this.ballotFunction.withdraw(this.account)
+      .then(async (trx) => {
+        Swal.fire({
+          title: 'Ether recibido',
+          text: 'Recibiste un ether para poder votar'
+        });
+      }).catch(async (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'ERROR',
+          text: 'Fallo la transacción'
+        });
       });
-    }).catch(async (error) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERROR',
-        text: 'Fallo la transacción'
-      });
-    });
   }
 
   async getAccount() {
 
-    let account;
     await this.onLoad()
       .then(async (web3) => {
-        account = (await web3.eth.getAccounts())[0];
+        this.account = (await web3.eth.getAccounts())[0];
+
+        this.web3.currentProvider.publicConfigStore.on('update', async function (event) {
+          this.account = (await event.selectedAddress.toString());
+        });
       })
       .catch(async (error) => {
         Swal.fire({
@@ -88,15 +97,57 @@ export class BallotService {
       });
 
 
-    return await account;
+    return await this.account;
+  }
+
+  async createBallot(_name: string, _proposal: string) {
+    console.log(this.account);
+    return (await this.ballotFunction.createBallot(_name, _proposal, this.account));
+  }
+
+  async addCandidate(_name: string) {
+    this.getAccount();
+    console.log(this.account);
+    return (await this.ballotFunction.addCandidate(_name, this.account));
+  }
+
+  async addVoter(email: string) {
+    this.getAccount();
+    return (await this.ballotContract.addVoter(email, this.account));
+  }
+
+  async startBallot(durationMinutes) {
+    this.getAccount();
+    console.log(this.account);
+    return (await this.ballotFunction.startBallot(durationMinutes, this.account));
+  }
+
+  async endBallot() {
+    this.getAccount();
+    console.log(this.account);
+    return (await this.ballotFunction.endBallot(this.account));
+  }
+
+  async getFinalResult() {
+    this.getAccount();
+    console.log(this.account);
+    return (await this.ballotFunction.getFinalResult(this.account));
+  }
+
+  async winnerCandidate() {
+    this.getAccount();
+    console.log(this.account);
+    return (await this.ballotFunction.winnerCandidate(this.account));
   }
 
   async getCandidates() {
-    return await this.ballotFunction.getCandidates();
+    this.getAccount();
+    return (await this.ballotFunction.getCandidates(this.account));
   }
 
-  async createBallot(_name: string, _proposal: string, from: string) {
-    return await this.ballotFunction.createBallot(_name, _proposal, from);
+  async doVote(index: number) {
+    this.getAccount();
+    return (await this.ballotFunction.doVote(index, this.account));
   }
 
   converter(web3) {

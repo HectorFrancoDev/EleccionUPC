@@ -66,15 +66,13 @@ contract Ballot {
     event showWinner(string, uint256 votes);
     event showCertificate(string, uint256);
     event showBallotInfo(string name, string proposal);
- 
+
     /**
      * @dev createBallot()
      * @param _name name of the ballot
      * @param _proposal proposal of the ballot
      */
-    function createBallot(string memory _name, string memory _proposal)
-        public
-    {
+    function createBallot(string memory _name, string memory _proposal) public {
         require(state == State.Initial, "Votación creada previamente");
         ballotAdmin = msg.sender;
         name = _name;
@@ -102,12 +100,12 @@ contract Ballot {
      * @dev función addCandidate()
      * @param email of the candidate
      */
-    function addVoter(string memory email) public inState(State.Created) {
+    function addVoter(string memory email) public inState(State.Voting) {
+        require(!getVoterEmail(email), "Email registrado previamente");
         require(
             !getAddedVoter(msg.sender),
             "Ya se registró un usuario con el address ingresado"
         );
-        require(!getVoterEmail(email), "Email registrado previamente");
         require(!voters[msg.sender].voted, "El usuario votó previamente");
 
         Voter storage voter = voters[msg.sender];
@@ -288,11 +286,11 @@ contract Ballot {
         require(msg.value >= 1 ether, "No se logró el deposito");
     }
 
-    function getAddressBalance(address add) public view returns(uint256) {
+    function getAddressBalance(address add) public view returns (uint256) {
         return toEther(address(add).balance);
     }
 
-    function withdraw() public payable  {
+    function withdraw() public payable {
         msg.sender.transfer(1 ether);
     }
 
@@ -315,7 +313,7 @@ contract Ballot {
         return now;
     }
 
-    function toEther(uint256 balance) private pure returns(uint256) {
+    function toEther(uint256 balance) private pure returns (uint256) {
         return (balance / 1e18);
     }
 
