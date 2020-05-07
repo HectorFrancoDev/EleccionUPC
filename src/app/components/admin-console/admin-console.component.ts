@@ -49,8 +49,7 @@ export class AdminConsoleComponent implements OnInit {
 
     Swal.showLoading();
     await this.ballot.createBallot(this.ballotObject.name, this.ballotObject.proposal)
-      .then((ballot) => {
-        console.log(ballot);
+      .then(() => {
         Swal.close();
         this.steps++;
         localStorage.setItem('steps', this.steps + '');
@@ -97,8 +96,7 @@ export class AdminConsoleComponent implements OnInit {
     Swal.showLoading();
 
     await this.ballot.addCandidate(this.candidate)
-      .then((candidate) => {
-        console.log(candidate);
+      .then(() => {
         Swal.close();
         Swal.fire({
           icon: 'success',
@@ -144,17 +142,18 @@ export class AdminConsoleComponent implements OnInit {
       text: 'Espere un momento...',
     });
 
-    this.steps++;
-    localStorage.setItem('steps', this.steps + '');
+    Swal.showLoading();
 
     await this.ballot.startBallot(this.ballotTime)
-      .then((ballot) => {
+      .then(() => {
         Swal.close();
         Swal.fire({
           icon: 'success',
           title: 'Votación inicializada',
-          text: 'Votación iniciada con [' + this.ballotTime + '] minutos'
+          text: 'Votación iniciada con [ ' + this.ballotTime + ' minutos ]'
         });
+        this.steps++;
+        localStorage.setItem('steps', this.steps + '');
       }).catch((error) => {
         Swal.close();
         Swal.fire({
@@ -163,8 +162,6 @@ export class AdminConsoleComponent implements OnInit {
           text: 'Error inicializando la votación...'
         });
       });
-
-
   }
 
   async onEndBallot() {
@@ -176,28 +173,25 @@ export class AdminConsoleComponent implements OnInit {
       text: 'Espere un momento...',
     });
 
-    setTimeout(() => {
-      Swal.showLoading();
-      this.steps++;
-      localStorage.setItem('steps', this.steps + '');
-    }, 2000);
+    Swal.showLoading();
 
     await this.ballot.endBallot()
-      .then((finish) => {
+      .then(() => {
         Swal.close();
         Swal.fire({
           icon: 'success',
-          title: 'Votación inicializada',
+          title: 'Fin de la jornada',
           text: 'Votación Finalizada'
         });
-
+        this.steps++;
+        localStorage.setItem('steps', this.steps + '');
 
       }).catch((error) => {
         Swal.close();
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Error inicializando la votación...'
+          text: 'Error finalizando la votación...'
         });
         console.log(error);
       });
@@ -218,6 +212,7 @@ export class AdminConsoleComponent implements OnInit {
 
     await this.ballot.getFinalResult()
       .then((result) => {
+        console.log(result);
         Swal.close();
         Swal.fire({
           icon: 'success',
@@ -228,6 +223,7 @@ export class AdminConsoleComponent implements OnInit {
         localStorage.setItem('steps', this.steps + '');
       })
       .catch((error) => {
+        console.log(error);
         Swal.close();
         Swal.fire({
           icon: 'error',
@@ -252,6 +248,7 @@ export class AdminConsoleComponent implements OnInit {
 
     await this.ballot.getFinalResult()
       .then((result) => {
+        console.log(result );
         Swal.close();
         Swal.fire({
           icon: 'success',
@@ -276,9 +273,18 @@ export class AdminConsoleComponent implements OnInit {
   logout() {
     if (this.stepsToken > 5) {
       this.auth.logout();
+      this.router.navigateByUrl('/admin');
       localStorage.removeItem('steps');
 
+    } else if (this.stepsToken < 5) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Vuelve pronto',
+        text: 'Recuerda que debes seguir configurando el proceso electoral'
+      });
+      this.auth.logout();
       this.router.navigateByUrl('/admin');
+
     } else {
       Swal.fire({
         icon: 'error',

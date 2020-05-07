@@ -5,23 +5,23 @@ export class BallotFunctions {
     }
 
     async getBallotInfo() {
-        return await this.contract.getBallotInfo();
+        return (await this.contract.getBallotInfo());
     }
 
-    async createBallot(_name, _proposal, hola) {
-        return (await this.contract.createBallot(_name, _proposal, { from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
+    async createBallot(_name, _proposal, from) {
+        return (await this.contract.createBallot(_name, _proposal, { from }));
     }
 
     async addCandidate(_name, from) {
-        return (await this.contract.addCandidate(_name, { from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
+        return (await this.contract.addCandidate(_name, { from }));
     }
 
     async startBallot(durationMinutes, from) {
-        return (await this.contract.startBallot(durationMinutes, { from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
+        return (await this.contract.startBallot(durationMinutes, { from }));
     }
 
     async endBallot(from) {
-        return (await this.contract.endBallot({ from: '0x8a0D461F5944e1c213cBf387f66EcBF0165068F3' }));
+        return (await this.contract.endBallot({ from }));
     }
 
     async getFinalResult(from) {
@@ -33,14 +33,14 @@ export class BallotFunctions {
     }
 
     async addVoter(email, from) {
-        return (await this.contract.addVoter(email));
+        return (await this.contract.addVoter(email, { from }));
     }
 
     async doVote(index, from) {
         return (await this.contract.doVote(index, { from }));
     }
 
-    async getCandidates(from) {
+    async getCandidates() {
         let total = await this.getTotalCandidates();
         let candidates = [];
 
@@ -65,6 +65,7 @@ export class BallotFunctions {
             }
         })
     }
+
 
     async getContractBalance() {
         return await this.contract.getContractBalance();

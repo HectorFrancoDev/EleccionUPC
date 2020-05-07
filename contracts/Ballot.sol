@@ -58,13 +58,13 @@ contract Ballot {
     /**
      * @dev Eventos del contrato
      */
-    event ElectionResult(string name, uint256 voteCount);
+    event ElectionResult(string result);
     event voterAdded(string voterEmail, address voterAddress);
-    event voteStarted(string);
-    event voteEnded(string);
+    event voteStarted(string started);
+    event voteEnded(string ended);
     event voteDone(address voter);
     event showWinner(string, uint256 votes);
-    event showCertificate(string, uint256);
+    event showCertificate(string certificate, uint256 timestamp);
     event showBallotInfo(string name, string proposal);
 
     /**
@@ -97,22 +97,23 @@ contract Ballot {
     }
 
     /**
-     * @dev función addCandidate()
-     * @param email of the candidate
+     * @dev función addVoter()
+     * @param _email of the current logged user
      */
-    function addVoter(string memory email) public inState(State.Voting) {
-        require(!getVoterEmail(email), "Email registrado previamente");
+    function addVoter(string memory _email) public inState(State.Voting) {
         require(
             !getAddedVoter(msg.sender),
             "Ya se registró un usuario con el address ingresado"
         );
+        require(!getVoterEmail(_email), "Email registrado previamente");
+
         require(!voters[msg.sender].voted, "El usuario votó previamente");
 
         Voter storage voter = voters[msg.sender];
-        voter.email = email;
+        voter.email = _email;
 
         addedVoters[msg.sender] = true;
-        addedEmail[email] = true;
+        addedEmail[_email] = true;
 
         voters[msg.sender].weight = 1;
 
@@ -220,12 +221,13 @@ contract Ballot {
     /**
      * @dev getFinalResult()
      */
-    function getFinalResult() public inState(State.Ended) {
+    function getFinalResult() public view inState(State.Ended) returns(string, uint256) {
         require(totalDoneVotes <= totalVoters, "Votación corrupta");
 
         for (uint256 i = 0; i < candidates.length; i++) {
-            emit ElectionResult(candidates[i].name, candidates[i].voteCount);
+            return(candidates[i].name, candidates[i].voteCount);
         }
+        // emit ElectionResult(resultado);
     }
 
     /**

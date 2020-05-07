@@ -16,23 +16,29 @@ export class BallotService {
   ballotFunction: any;
 
   account: any;
+  cuenta: any;
   app: any;
 
   constructor() {
   }
-
-
-
 
   async onLoad() {
     this.web3 = await getWeb3();
     this.ballotContract = await BallotContract(this.web3.currentProvider);
     this.ballotFunction = new BallotFunctions(this.ballotContract);
     this.account = (await this.web3.eth.getAccounts())[0];
-    
-    this.web3.currentProvider.publicConfigStore.on('update', async function (event) {
-      this.account = (await event.selectedAddress.toString());
+
+    const getResult = this.ballotContract.ElectionResult();
+    getResult.watch((error, result) => {
+      const { name, votes } = result.args;
+      console.log(`Candidato ${name}, obtuvo ${votes} votos`);
     });
+
+    this.web3.currentProvider.publicConfigStore.on('update', async function (event) {
+      this.account = await event.selectedAddress.toString();
+    });
+
+    console.log('Account', this.account);
     return this.web3;
   }
 
@@ -113,7 +119,7 @@ export class BallotService {
 
   async addVoter(email: string) {
     this.getAccount();
-    return (await this.ballotContract.addVoter(email, this.account));
+    return (await this.ballotFunction.addVoter(email, this.account));
   }
 
   async startBallot(durationMinutes) {
@@ -142,7 +148,7 @@ export class BallotService {
 
   async getCandidates() {
     this.getAccount();
-    return (await this.ballotFunction.getCandidates(this.account));
+    return (await this.ballotFunction.getCandidates());
   }
 
   async doVote(index: number) {

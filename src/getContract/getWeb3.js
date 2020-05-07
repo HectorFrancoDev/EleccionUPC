@@ -10,9 +10,12 @@ const getWeb3 = () => {
             if (typeof window.ethereum !== 'undefined') {
                 try {
                     await ethereum.enable();
-
                 } catch (error) {
-
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Se necesitan permisos',
+                        text: 'Necesitas darle permiso a la aplicación para que interactue con Metamask'
+                    });
                 }
             }
 
@@ -43,6 +46,12 @@ const getWeb3 = () => {
                 } else {
 
                     web3 = new Web3(web3.currentProvider);
+
+                    let account = (await web3.eth.getAccounts())[0]
+                    web3.currentProvider.publicConfigStore.on('update', async function (event) {
+                        account = (await event.selectedAddress.toString());
+                    });
+                    console.log('CUENTA', account);
                     resolve(web3);
                 }
             } else {

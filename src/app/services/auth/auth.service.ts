@@ -56,7 +56,7 @@ export class AuthService {
   }
 
   register() {
-    this.votersPrueba.forEach((voter) => {
+    this.voters.forEach((voter) => {
       this.reg(voter)
         .subscribe((token: any) => {
           this.sendEmailVerification(token.idToken)

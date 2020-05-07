@@ -11,27 +11,25 @@ import { AuthService } from '../../services/auth/auth.service';
 })
 export class CandidatosComponent implements OnInit {
 
-  candidates = [];
+  candidates: Candidato[] = [];
   estado: boolean;
 
   constructor(private ballot: BallotService,
     private auth: AuthService,
-    private router: Router) {
+    private router: Router) { }
 
-  }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
+
 
   checkEmailVoter() {
     const userToken = localStorage.getItem('token');
-    if (userToken !== '') {
+    if (userToken) {
       this.auth.getUserState(userToken)
       .subscribe((user: any) => {
         const email = user.users[0].email;
         this.addVoter(email);
       });
-
     } else {
       console.log('No logueado');
     }
@@ -59,17 +57,34 @@ export class CandidatosComponent implements OnInit {
 
   async getCandidates() {
     await this.ballot.getCandidates()
-      .then((candidates: any) => {
+      .then((candidates: Candidato[]) => {
         this.candidates = candidates;
+        console.log(this.candidates);
       }).catch((error) => {
         console.log(error);
       })
   }
 
+  confirmVoteBeforeDo(index: number) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Confirma tu elección',
+      text: 'Una vez hayas votado por no podrás cambiar tu elección',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, votar'
+    }).then(async (result) => {
+      if (result.value) {
+        await this.doVote(index);
+      }
+    });
+  }
+
   async doVote(index: number) {
+    const candidato = this.candidates[index].name;
 
     this.ballot.getAccount();
-
     Swal.fire({
       icon: 'info',
       title: 'Votando',
@@ -80,12 +95,11 @@ export class CandidatosComponent implements OnInit {
 
     await this.ballot.doVote(index)
       .then((vote) => {
-        console.log(vote);
         Swal.close();
         Swal.fire({
           icon: 'success',
-          title: 'Votación inicializada',
-          text: 'Votación Finalizada'
+          title: 'Voto realizado',
+          text: 'Votó por "' + candidato.toUpperCase() + '"'
         });
 
         this.router.navigateByUrl('/resultados');
@@ -95,12 +109,16 @@ export class CandidatosComponent implements OnInit {
         Swal.close();
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'Error en el voto.'
+          title: 'Error en el voto',
+          text: 'Error al realizar el voto'
         });
         console.log(error);
       });
 
   }
 
+}
+
+export interface Candidato {
+  name: string;
 }
