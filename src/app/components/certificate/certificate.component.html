@@ -1,0 +1,45 @@
+<div class="contenedor" id="pdfCertificate" #pdfCertificate *ngIf="voted">
+  <img src="./assets/logo-upc.png" width="100" height="40" alt="">
+  
+  <h2 id="cert-title">
+    Certificado de Votación
+  </h2>
+
+  <p class="smaller" id="cert-declaration">
+    certifica que el estudiante identificado con el correo
+  </p>
+
+  <h2 id="cert-holder">
+    {{emailVoter}}
+  </h2>
+
+  <p class="smaller" id='cert-completed-line'>
+    participó en las elecciones prototipo a <i>Representante Estudiantil</i> del programa de
+  </p>
+
+
+  <h2 id="cert-course">
+    Ingeniería de Sistemas
+  </h2>
+
+  <hr>
+
+  <div id="cert-desc" id='cert-details'>
+    <p style="font-size: 10px;">
+      <i>
+        La anterior votación no tiene valor alguno. Hace parte de una jornada electoral ficticia del Prototipo de
+        Votación Electrónica para la Universidad Piloto de Colombia.
+      </i>
+    </p>
+  </div>
+
+  <hr>
+  <p class="smaller" id='cert-issued'>
+    <b>Emitido el día:</b> {{date}}
+  </p>
+  <p id="cert-from" class="smaller">
+    <b>ID:</b> {{account}}
+  </p>
+</div>
+<br>
+<button class="btn btn-success" (click)="generateCertificate()">DESCARGAR CERTIFCADO</button>

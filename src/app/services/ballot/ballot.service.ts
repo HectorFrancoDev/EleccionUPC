@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import getWeb3 from '../../../getContract/getWeb3';
+import getAccount from '../../../getContract/getAccount';
 import BallotContract from '../../../getContract/Ballot';
 import { BallotFunctions } from '../../../getContract/BallotFunctions';
 import Swal from 'sweetalert2';
@@ -14,150 +15,82 @@ export class BallotService {
   web3: any;
   ballotContract: any;
   ballotFunction: any;
-
   account: any;
-  cuenta: any;
-  app: any;
 
   constructor() {
+
+    getAccount().then((account) => {
+      this.account = account;
+    }).catch((err) => {
+      console.log(err);
+    });
+
+    this.onLoad();
   }
 
   async onLoad() {
-    this.web3 = await getWeb3();
-    this.ballotContract = await BallotContract(this.web3.currentProvider);
-    this.ballotFunction = new BallotFunctions(this.ballotContract);
-    this.account = (await this.web3.eth.getAccounts())[0];
 
-    const getResult = this.ballotContract.ElectionResult();
-    getResult.watch((error, result) => {
-      const { name, votes } = result.args;
-      console.log(`Candidato ${name}, obtuvo ${votes} votos`);
-    });
+    try {
+      this.web3 = await getWeb3();
+      this.ballotContract = await BallotContract(this.web3);
+      this.ballotFunction = new BallotFunctions(this.ballotContract);
 
-    this.web3.currentProvider.publicConfigStore.on('update', async function (event) {
-      this.account = await event.selectedAddress.toString();
-    });
-
-    console.log('Account', this.account);
-    return this.web3;
-  }
-
-  async getContractBalance() {
-    let contractBalance;
-
-    await this.ballotFunction.getContractBalance()
-      .then(async (balance: any) => contractBalance = (await balance))
-      .catch(async (error) => console.log(error));
-
-    return contractBalance.toNumber();
-  }
-
-  async depositBalance(value) {
-    return await this.ballotFunction.deposit(this.account, value)
-      .then(async (trx: any) => {
-        Swal.fire({
-          title: 'Transaccion exitosa',
-          text: 'Transacción hecha'
-        });
-      }).catch((error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'ERROR',
-          text: 'Fallo la transacción'
-        });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Cambiar a la red de RINKEBY',
+        text: 'La votación solo podrá efectuarse en esa red'
       });
-  }
-
-  async withdraw() {
-    return await this.ballotFunction.withdraw(this.account)
-      .then(async (trx) => {
-        Swal.fire({
-          title: 'Ether recibido',
-          text: 'Recibiste un ether para poder votar'
-        });
-      }).catch(async (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'ERROR',
-          text: 'Fallo la transacción'
-        });
-      });
-  }
-
-  async getAccount() {
-
-    await this.onLoad()
-      .then(async (web3) => {
-        this.account = (await web3.eth.getAccounts())[0];
-
-        this.web3.currentProvider.publicConfigStore.on('update', async function (event) {
-          this.account = (await event.selectedAddress.toString());
-        });
-      })
-      .catch(async (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Cambiar a la red de RINKEBY',
-          text: 'La votación solo podrá efectuarse en esa red'
-        });
-      });
-
-
-    return await this.account;
+      console.log(error);
+    }
   }
 
   async createBallot(_name: string, _proposal: string) {
-    console.log(this.account);
     return (await this.ballotFunction.createBallot(_name, _proposal, this.account));
   }
 
+  async getBallotState() {
+    return (await this.ballotFunction.getBallotState());
+  }
+
   async addCandidate(_name: string) {
-    this.getAccount();
-    console.log(this.account);
     return (await this.ballotFunction.addCandidate(_name, this.account));
   }
 
   async addVoter(email: string) {
-    this.getAccount();
     return (await this.ballotFunction.addVoter(email, this.account));
   }
 
-  async startBallot(durationMinutes) {
-    this.getAccount();
-    console.log(this.account);
+  async startBallot(durationMinutes: number) {
     return (await this.ballotFunction.startBallot(durationMinutes, this.account));
   }
 
+  async doVote(index: number) {
+    return (await this.ballotFunction.doVote(index, this.account));
+  }
+
   async endBallot() {
-    this.getAccount();
-    console.log(this.account);
     return (await this.ballotFunction.endBallot(this.account));
   }
 
   async getFinalResult() {
-    this.getAccount();
-    console.log(this.account);
     return (await this.ballotFunction.getFinalResult(this.account));
   }
 
-  async winnerCandidate() {
-    this.getAccount();
-    console.log(this.account);
-    return (await this.ballotFunction.winnerCandidate(this.account));
-  }
-
   async getCandidates() {
-    this.getAccount();
     return (await this.ballotFunction.getCandidates());
   }
 
-  async doVote(index: number) {
-    this.getAccount();
-    return (await this.ballotFunction.doVote(index, this.account));
+  async getVoterState() {
+    return (await this.ballotFunction.getVoterState(this.account));
   }
 
-  converter(web3) {
-    return (value) => web3.utils.fromWei(value.toString(), 'ether');
+  async getTotalVoters() {
+    return (await this.ballotFunction.getTotalVoters());
+  }
+
+  async getTotalDoneVotes() {
+    return (await this.ballotFunction.getTotalDoneVotes());
   }
 
 }

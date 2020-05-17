@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css?family=Saira+Condensed:700');
+
+
+.contenedor{
+  background-color: #E4E4E4;
+  padding: 3px;
+  border: #be2d24 solid 1px;
+  width: 400px;
+  text-align: center;
+}
+
+hr {
+  background-color: #be2d24;
+  height: 1px;
+  margin: 1px;
+}
+
+
+#cert-stamp, #cert-ceo-sign {
+  width: 60%;
+  display: inline-block;
+}
+
+div#cert-issued-by, div#cert-ceo-design {
+  width: 40%;
+  display: inline-block;
+  float: left;
+}
+
+div#cert-ceo-design {
+  margin-left: 10%;
+}
+
+h2 {
+  font-family: 'Saira Condensed', sans-serif;
+  font-size: 15px;
+  margin: 3px 0px;
+}
+
+p {
+  font-family: 'Arial', sans-serif;
+  font-size: 15px;
+  margin: 2px 0px;
+}
+
+h2#cert-holder {
+  font-size: 20px;
+  color: #be2d24;
+}
+
+p.smaller {
+  font-size: 10px !important;
+}
+
+.smaller_2 {
+  font-size: 10px !important;
+}
+
+div#cert-desc {
+  width: 70%;
+}
+
+p#cert-from {
+  color: #be2d24;
+  font-family: 'Saira Condensed', sans-serif;
+}
+
+div#cert-verify {
+  opacity: 1;
+  position: absolute;
+  top: 680px;
+  left: 60%;
+  font-size: 12px;
+  color: grey;
+}

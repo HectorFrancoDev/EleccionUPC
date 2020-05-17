@@ -1,37 +1,61 @@
-<div class="jumbotron">
+<div class="card text-white bg-primary mb-3">
+  <div class="card-header">Fin de la votación</div>
+  <div class="card-body">
+    <h5 class="card-title">Votación</h5>
+    <p class="card-text">
+      La votación finaliza el día {{dateEnd}}
+    </p>
+  </div>
+</div>
+
+
+<div class="jumbotron" *ngIf="voteTime">
   <h2 class="display-5">Votar por el candidato</h2>
   <hr class="my-4">
   <p class="lead">
     Elige tu candidato por Representante Estudiantil
   </p>
-  <div>
-    <button class="btn btn-success" (click)="getCandidates()">Cargar candidatos</button>
+
+  <div class="row row-cols-1 row-cols-md-2" *ngIf="voteFirst === 'false'">
+    <div class="col-sm-6">
+      <button class="btn btn-success btn-block" (click)="getCandidates()">Cargar candidatos</button>
+    </div>
+    <div class="col-sm-6">
+      <button class="btn btn-info btn-block" (click)="checkEmailVoter()" *ngIf="!estado && canVote">Verificar
+        disponibilidad</button>
+    </div>
   </div>
 </div>
 
 
+<div class="card">
 
-
-
-<div>
-  <button class="btn btn-info" (click)="checkEmailVoter()" *ngIf="!estado">Verificar disponibilidad</button>
 </div>
 
-<div class="row row-cols-1 row-cols-md-2">
 
-  <div class="col-sm-6" *ngFor="let candidate of candidates; index as i">
-    <div class="card border-danger mb-3">
-      <div class="card-body">
-        <h5 class="card-title">{{candidate.name}}</h5>
+<ng-container *ngIf="candidates.length > 0">
+
+  <hr>
+  <h3>Lista de candidatos disponbles</h3>
+  <hr>
+
+  <div class="card mb-3" *ngFor="let candidate of candidates; index as i">
+    <div class="row no-gutters">
+
+      <div class="col-md-2 bg-light">
+        <img src="./assets/user.png" alt="..." height="100px" width="100px">
       </div>
 
-      <div class="card-footer text-muted">
-        <button class="btn btn-danger" *ngIf="estado" (click)="confirmVoteBeforeDo(i)">
-          Votar
-        </button>
+      <div class="col-md-10 bg-light">
+        <div class="card-body">
+          <h5 class="card-title"><b>Candidato: {{i + 1}}: </b><i>{{candidate.name}}</i></h5>
+          <p class="card-text">Oprime el botón VOTAR para elegir este candidato</p>
+          <button class="btn btn-danger btn-block" *ngIf="estado" (click)="confirmVoteBeforeDo(i)">Votar por
+            <b>{{candidate.name}}</b></button>
+        </div>
       </div>
 
     </div>
   </div>
 
-</div>
+</ng-container>

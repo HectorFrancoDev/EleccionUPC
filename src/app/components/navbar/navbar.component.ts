@@ -11,13 +11,9 @@ import { BallotService } from '../../services/ballot/ballot.service';
 })
 export class NavbarComponent implements OnInit {
 
-  account: string;
-
   constructor(private auth: AuthService,
               private router: Router,
-              private ballot: BallotService) {
-
-  }
+              private ballot: BallotService) { }
 
   ngOnInit() {
   }
@@ -31,8 +27,7 @@ export class NavbarComponent implements OnInit {
   }
 
   getAccount() {
-    this.ballot.getAccount().then((account) => this.account = account);
-    return this.account;
+    return this.ballot.account;
   }
 
   async getAccountShow() {

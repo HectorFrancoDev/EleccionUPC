@@ -1,7 +1,41 @@
-<div class="jumbotron">
+<div class="card text-white bg-primary mb-3">
+  <div class="card-header">Fin de la votación</div>
+  <div class="card-body">
+    <p class="card-text">
+      La votación finaliza el día {{dateEnd}}
+    </p>
+  </div>
+</div>
+
+<div class="jumbotron" *ngIf="showResults">
   <h2 class="display-4">Resultados Votación</h2>
   <p class="lead">
-    Aquí puedes revisar los resultados obtenidos de la votación por candidato
-
+    Aquí puedes revisar los resultados obtenidos de la votación de cada candidato
   </p>
+
+  <button class="btn btn-success" (click)="onShowBallotResults()">Ver resultados</button>
 </div>
+
+<ng-container *ngIf="resultados.length > 0">
+
+  <hr>
+  <div>
+    <h3>Resultados de la votación</h3>
+  </div>
+  <hr>
+
+  <div class="card mb-3" *ngFor="let candidate of resultados">
+    <div class="row no-gutters">
+      <div class="col-md-2">
+        <img src="./assets/user.png" class="card-img" alt="..." height="100px" width="100px">
+      </div>
+      <div class="col-md-10 bg-light">
+        <div class="card-body">
+          <h5 class="card-title"><b>Candidato: </b><i>{{candidate.name}}</i></h5>
+          <p class="card-text"><b>Votos obtenidos: </b><i>{{candidate.voteCount}}</i></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ng-container>

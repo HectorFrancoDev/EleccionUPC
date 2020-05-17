@@ -8,6 +8,10 @@ export class BallotFunctions {
         return (await this.contract.getBallotInfo());
     }
 
+    async getBallotState() {
+        return (await this.contract.getBallotState());
+    }
+
     async createBallot(_name, _proposal, from) {
         return (await this.contract.createBallot(_name, _proposal, { from }));
     }
@@ -28,8 +32,8 @@ export class BallotFunctions {
         return (await this.contract.getFinalResult({ from }));
     }
 
-    async winnerCandidate(from) {
-        return (await this.contract.winnerCandidate({ from }));
+    async winnerCandidate() {
+        return (await this.contract.winnerCandidate());
     }
 
     async addVoter(email, from) {
@@ -40,6 +44,10 @@ export class BallotFunctions {
         return (await this.contract.doVote(index, { from }));
     }
 
+    async getVoterState(from) {
+        return (await this.contract.getVoterState(from));
+    }
+
     async getCandidates() {
         let total = await this.getTotalCandidates();
         let candidates = [];
@@ -48,24 +56,21 @@ export class BallotFunctions {
             let candidate = await this.contract.candidates(i);
             candidates.push(candidate);
         }
-
         return this.mapCandidates(candidates);
     }
+
 
     async getTotalCandidates() {
         return (await this.contract.getTotalCandidates()).toNumber();
     }
 
-
-    mapCandidates(candidates) {
-        return candidates.map((candidate) => {
-            return {
-                name: candidate[0],
-                voteCount: candidate[1].toNumber()
-            }
-        })
+    async getTotalVoters() {
+        return (await this.contract.getTotalVoters());
     }
 
+    async getTotalDoneVotes() {
+        return (await this.contract.getTotalDoneVotes());
+    }
 
     async getContractBalance() {
         return await this.contract.getContractBalance();
@@ -76,7 +81,25 @@ export class BallotFunctions {
     }
 
     async withdraw(from) {
-        return (await this.contract.withdraw({ from }));
+        return (await this.contract.withdraw({from}));
+    }
+
+    async getEther(from) {
+        return (await this.contract.getEther({ from }));
+    }
+
+    async getVotersLength() {
+        return (await this.contract.getVotersLength());
+    }
+
+
+    mapCandidates(candidates) {
+        return candidates.map((candidate) => {
+            return {
+                name: candidate[0],
+                voteCount: candidate[1].toNumber()
+            }
+        })
     }
 
 }

@@ -31,8 +31,8 @@
             <div *ngIf="form.submitted && form.controls['name'].errors" class="text-danger animated fadeIn">
               Ingresa el nombre
             </div>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" [(ngModel)]="ballotObject.name"
-              required>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre"
+              [(ngModel)]="ballotObject.name" required>
           </div>
           <div class="col-sm-7 my-1">
             <label for="proposal">Proposito</label>
@@ -135,7 +135,8 @@
             <button type="submit" class="btn btn-danger">Cargar candidato</button>
           </form>
 
-          <button class="btn btn-success" (click)="finishCandidates()">Finalizar inscripción</button>
+          <button class="btn btn-success" *ngIf="candidates.length > 2" (click)="finishCandidates()">Finalizar
+            inscripción</button>
 
         </div>
       </div>
@@ -215,7 +216,9 @@
           <p class="card-text">
             FInaliza la jornada electoral una vez se termine el tiempo establecido
           </p>
-          <button type="button" class="btn btn-danger" (click)="onEndBallot()">Finalizar votación</button>
+          <button type="button" class="btn btn-info" *ngIf="!allowToEnd" (click)="verifyEndTime()">Verificar tiempo</button>
+          <button type="button" class="btn btn-danger" *ngIf="allowToEnd" (click)="onEndBallot()">Finalizar
+            votación</button>
         </div>
       </div>
     </div>
@@ -229,7 +232,9 @@
           <p class="card-text">
             FInaliza la jornada electoral una vez se termine el tiempo establecido
           </p>
-          <button type="button" class="btn btn-danger" (click)="onEndBallot()">Finalizar votación</button>
+          <button type="button" class="btn btn-info" (click)="verifyEndTime()">Verificar tiempo</button>
+          <button type="button" class="btn btn-danger" (click)="onEndBallot()" *ngIf="allowToEnd">Finalizar
+            votación</button>
         </div>
       </div>
     </div>
@@ -248,7 +253,7 @@
         <div class="card-body">
           <h5 class="card-title">6. Mostrar Resultados</h5>
           <p class="card-text">
-            Mira como quedaron los resultados de la votación.
+            Mira el resultado final de las votaciones.
           </p>
           <button type="button" class="btn btn-danger" (click)="onShowBallotResults()">Mostrar resultados</button>
         </div>
@@ -262,17 +267,24 @@
         <div class="card-body">
           <h5 class="card-title">6. Mostrar Resultados</h5>
           <p class="card-text">
-            Mira como quedaron los resultados de la votación.
+            Mira el resultado final de las votaciones.
           </p>
           <button type="button" class="btn btn-danger" (click)="onShowBallotResults()">Mostrar resultados</button>
         </div>
       </div>
     </div>
   </ng-template>
+</div>
+
+<br>
+<div>
+  <button class="btn btn-success" (click)="logout()">
+    Salir de la consola
+  </button>
+</div>
 
 
-
-  <ng-container *ngIf="stepState() >= 5; else else_7">
+<!--<ng-container *ngIf="stepState() >= 5; else else_7">
     <div class="col-sm-6">
       <div class="card text-white bg-secondary mb-3">
         <div class="card-body">
@@ -298,14 +310,56 @@
         </div>
       </div>
     </div>
-  </ng-template>
-
-</div>
+  </ng-template> -->
 
 
 
-<div>
-  <button class="btn btn-success" (click)="logout()">
-    Salir de la consola
-  </button>
-</div>
+<!-- SHOW RESULTS -->
+<ng-container *ngIf="stepState() >= 6 && showResults">
+
+  <hr>
+  <div>
+    <h3>Resultados de la votación</h3>
+  </div>
+  <hr>
+
+  <div class="row row-cols-1 row-cols-md-2">
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Votantes registrados</h5>
+          <p class="card-text">
+            Total de votantes que reclamaron su derecho al voto: {{totalVoters}}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="card text-white bg-secondary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Votos hechos</h5>
+          <p class="card-text">
+            Total de votos realizados: {{totalDoneVotes}}
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card mb-3" *ngFor="let candidate of resultados">
+    <div class="row no-gutters">
+      <div class="col-md-2">
+        <img src="./assets/user.png" class="card-img" alt="..." height="100px" width="100px">
+      </div>
+      <div class="col-md-10 bg-light">
+        <div class="card-body">
+          <h5 class="card-title"><b>Candidato: </b><i>{{candidate.name}}</i></h5>
+          <p class="card-text"><b>Votos obtenidos: </b><i>{{candidate.voteCount}}</i></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ng-container>

@@ -3,6 +3,7 @@ import { BallotService } from '../../services/ballot/ballot.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
+import { VotersService } from '../../services/voters/voters.service';
 
 @Component({
   selector: 'app-candidatos',
@@ -11,25 +12,105 @@ import { AuthService } from '../../services/auth/auth.service';
 })
 export class CandidatosComponent implements OnInit {
 
-  candidates: Candidato[] = [];
-  estado: boolean;
+  private candidates: Candidato[] = [];
+  private estado: boolean;
+  private voteFirst = 'false';
+  private voteTime = false;
+  private canVote = false;
+  private dateEnd: Date;
+  private time;
 
   constructor(private ballot: BallotService,
     private auth: AuthService,
-    private router: Router) { }
+    private router: Router,
+    private voterService: VotersService) {
 
+    this.getVoter();
+
+    this.voterService.getBallotLeftTime()
+      .subscribe((resp: any) => {
+        this.time = resp;
+        this.dateEnd = new Date();
+        this.dateEnd.setTime(this.time);
+        this.verifyEndTime(this.time);
+      }, (error) => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Espera',
+          text: 'Espera hasta que la votación inicie'
+        });
+      });
+
+    if (this.leerToken() === 'true') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Ya votaste',
+        text: 'Ya realizaste tu voto, no puedes volver a votar.....'
+      });
+    }
+
+  }
 
   ngOnInit() { }
 
+  verifyEndTime(time: number) {
+
+    const currentDate = new Date();
+    const currentDateMilliseconds = currentDate.getTime();
+    const difference = time - currentDateMilliseconds;
+
+    if (this.voteFirst === 'true') {
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Ya votaste',
+        text: 'Ya realizaste tu voto, no puedes volver a votar.....'
+      });
+
+    } else if (difference > 30000) {
+
+      const timeMessage = 'Tienes ' + Math.ceil(difference / 60000) + ' minutos para votar';
+      Swal.fire({
+        icon: 'info',
+        title: 'Haz tu voto',
+        text: timeMessage + ''
+      });
+      this.voteTime = true;
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Votación acabada',
+        text: 'No pueder votar, el tiempo se acabó'
+      });
+    }
+  }
+
+  async getVoter() {
+    await this.ballot.getVoterState()
+      .then((voteDone: boolean) => {
+        if (voteDone) {
+          this.voteFirst = voteDone + '';
+          localStorage.setItem('voted', this.voteFirst);
+          this.leerToken();
+          Swal.fire({
+            icon: 'warning',
+            title: 'Ya votaste',
+            text: 'Ya realizaste tu voto, no puedes volver a votar'
+          });
+        }
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
 
   checkEmailVoter() {
     const userToken = localStorage.getItem('token');
     if (userToken) {
       this.auth.getUserState(userToken)
-      .subscribe((user: any) => {
-        const email = user.users[0].email;
-        this.addVoter(email);
-      });
+        .subscribe((user: any) => {
+          const email = user.users[0].email;
+          this.addVoter(email);
+        });
     } else {
       console.log('No logueado');
     }
@@ -59,10 +140,20 @@ export class CandidatosComponent implements OnInit {
     await this.ballot.getCandidates()
       .then((candidates: Candidato[]) => {
         this.candidates = candidates;
-        console.log(this.candidates);
+
+        if (this.candidates.length !== 0) {
+          this.canVote = true;
+        } else {
+          Swal.fire({
+            icon: 'info',
+            title: 'Sin candidatos',
+            text: 'No hay candidatos disponibles',
+          });
+        }
+
       }).catch((error) => {
         console.log(error);
-      })
+      });
   }
 
   confirmVoteBeforeDo(index: number) {
@@ -84,7 +175,6 @@ export class CandidatosComponent implements OnInit {
   async doVote(index: number) {
     const candidato = this.candidates[index].name;
 
-    this.ballot.getAccount();
     Swal.fire({
       icon: 'info',
       title: 'Votando',
@@ -94,16 +184,30 @@ export class CandidatosComponent implements OnInit {
     Swal.showLoading();
 
     await this.ballot.doVote(index)
-      .then((vote) => {
+      .then(() => {
         Swal.close();
         Swal.fire({
           icon: 'success',
           title: 'Voto realizado',
           text: 'Votó por "' + candidato.toUpperCase() + '"'
         });
+        this.voteFirst = 'true';
+        this.candidates = [];
+        localStorage.setItem('voted', this.voteFirst);
 
-        this.router.navigateByUrl('/resultados');
+        const userToken = localStorage.getItem('token');
+        if (userToken) {
+          this.auth.getUserState(userToken)
+            .subscribe((user: any) => {
+              const email = user.users[0].email;
+              const dateIssued = new Date();
+              this.voterService.postPeopleWhoVoted(email, dateIssued);
+            });
+        } else {
+          console.log('No logueado');
+        }
 
+        this.router.navigateByUrl('/certificate');
       })
       .catch((error) => {
         Swal.close();
@@ -115,6 +219,15 @@ export class CandidatosComponent implements OnInit {
         console.log(error);
       });
 
+  }
+
+  leerToken() {
+    if (localStorage.getItem('voted')) {
+      this.voteFirst = localStorage.getItem('voted');
+    } else {
+      this.voteFirst = 'false';
+    }
+    return this.voteFirst;
   }
 
 }

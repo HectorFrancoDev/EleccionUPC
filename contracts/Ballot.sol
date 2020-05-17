@@ -1,4 +1,3 @@
-// pragma solidity >=0.4.22 <0.7.0;
 pragma solidity ^0.4.24;
 
 
@@ -43,6 +42,7 @@ contract Ballot {
 
     Candidate[] public candidates;
     address[] public votersAddress;
+    uint256[] public votesDone;
 
     /**
      * @dev Mappings verificadores de los voters
@@ -58,7 +58,7 @@ contract Ballot {
     /**
      * @dev Eventos del contrato
      */
-    event ElectionResult(string result);
+    event ElectionResult(string name, uint256 voteCount);
     event voterAdded(string voterEmail, address voterAddress);
     event voteStarted(string started);
     event voteEnded(string ended);
@@ -77,12 +77,8 @@ contract Ballot {
         ballotAdmin = msg.sender;
         name = _name;
         proposal = _proposal;
-
-        totalVoters = 0;
-        totalDoneVotes = 0;
         state = State.Created;
     }
-
     /**
      * @dev función addCandidate()
      * @param _name of the candidate
@@ -92,6 +88,7 @@ contract Ballot {
         public
         inState(State.Created)
         checkBallotAdmin
+
     {
         candidates.push(Candidate(_name, 0));
     }
@@ -101,10 +98,8 @@ contract Ballot {
      * @param _email of the current logged user
      */
     function addVoter(string memory _email) public inState(State.Voting) {
-        require(
-            !getAddedVoter(msg.sender),
-            "Ya se registró un usuario con el address ingresado"
-        );
+        require(!getAddedVoter(msg.sender),"Ya se registró un usuario con el address ingresado");
+
         require(!getVoterEmail(_email), "Email registrado previamente");
 
         require(!voters[msg.sender].voted, "El usuario votó previamente");
@@ -118,8 +113,8 @@ contract Ballot {
         voters[msg.sender].weight = 1;
 
         votersAddress.push(msg.sender);
-        totalVoters++;
     }
+
 
     /**
      * @dev función startBallot()
@@ -151,11 +146,9 @@ contract Ballot {
 
         voters[msg.sender].voted = true;
         voters[msg.sender].candidateIndex = candidateIndex;
-        voters[msg.sender].voteTimestamp = getTimestamp();
 
         candidates[candidateIndex].voteCount += voters[msg.sender].weight;
-        totalDoneVotes++;
-        emit voteDone(msg.sender);
+        votesDone.push(candidateIndex);
     }
 
     /**
@@ -215,19 +208,26 @@ contract Ballot {
      * @return uint256 the total registered voters
      */
     function getTotalVoters() public view checkBallotAdmin returns (uint256) {
-        return totalVoters;
+        return votersAddress.length;
+    }
+
+        /**
+     * @dev getTotalDoneVotes()
+     * @return uint256 the total votes done
+     */
+    function getTotalDoneVotes() public view checkBallotAdmin returns (uint256) {
+        return votesDone.length;
     }
 
     /**
      * @dev getFinalResult()
      */
-    function getFinalResult() public view inState(State.Ended) returns(string, uint256) {
+    function getFinalResult() public inState(State.Ended) {
         require(totalDoneVotes <= totalVoters, "Votación corrupta");
 
         for (uint256 i = 0; i < candidates.length; i++) {
-            return(candidates[i].name, candidates[i].voteCount);
+            emit ElectionResult(candidates[i].name, candidates[i].voteCount);
         }
-        // emit ElectionResult(resultado);
     }
 
     /**
@@ -237,6 +237,10 @@ contract Ballot {
 
     function getAddedVoter(address voterAddress) private view returns (bool) {
         return addedVoters[voterAddress];
+    }
+
+    function getVoterState(address voterAddress) public view returns(bool) {
+        return voters[voterAddress].voted;
     }
 
     /**
@@ -288,12 +292,11 @@ contract Ballot {
         require(msg.value >= 1 ether, "No se logró el deposito");
     }
 
-    function getAddressBalance(address add) public view returns (uint256) {
-        return toEther(address(add).balance);
-    }
-
-    function withdraw() public payable {
-        msg.sender.transfer(1 ether);
+    function withdraw()public {
+        require(msg.sender == ballotAdmin, "Dueño");
+        for (uint256 i = 0; i < votersAddress.length; i++) {
+             votersAddress[i].transfer(1 ether);
+        }
     }
 
     /**

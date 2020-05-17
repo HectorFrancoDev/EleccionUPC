@@ -49,7 +49,7 @@ export class IngresarComponent implements OnInit {
 
   }
 
-  private getUserState(idToken) {
+  getUserState(idToken) {
 
     this.auth.getUserState(idToken)
       .subscribe((user: any) => {

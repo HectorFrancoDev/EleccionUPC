@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-
-import Swal from 'sweetalert2';
 import { BallotModel } from '../../models/ballot.model';
 import { AuthService } from '../../services/auth/auth.service';
 import { BallotService } from '../../services/ballot/ballot.service';
+import { VotersService } from '../../services/voters/voters.service';
 import { Router } from '@angular/router';
-import { text } from '@angular/core/src/render3';
+
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admin-console',
@@ -15,20 +15,31 @@ import { text } from '@angular/core/src/render3';
 })
 export class AdminConsoleComponent implements OnInit {
 
+  ballotObject: BallotModel = new BallotModel();
   steps = 1;
   stepsToken: any;
-
-  ballotObject: BallotModel = new BallotModel();
-  candidate: string;
+  timeToken: any;
+  time = 0;
   ballotTime: number;
 
+  ballotEndTime: Date;
+  allowToEnd: boolean;
+
   candidates = [];
+  resultados = [];
+  showResults: boolean;
+
+  candidate: string;
+  totalVoters: number;
+  totalDoneVotes: number;
 
   constructor(private auth: AuthService,
     private ballot: BallotService,
-    private router: Router) {
-    this.ballot.getAccount();
+    private router: Router,
+    private voterService: VotersService) {
+
     this.leerToken();
+    this.leerTokenTime();
   }
 
   ngOnInit() {
@@ -40,7 +51,7 @@ export class AdminConsoleComponent implements OnInit {
       return;
     }
 
-    this.ballot.getAccount();
+    // this.ballot.getAccount();
 
     Swal.fire({
       title: 'Creando votación',
@@ -53,6 +64,7 @@ export class AdminConsoleComponent implements OnInit {
         Swal.close();
         this.steps++;
         localStorage.setItem('steps', this.steps + '');
+        this.voterService.postSetupStep(this.steps);
       })
       .catch((error) => {
         Swal.close();
@@ -80,13 +92,24 @@ export class AdminConsoleComponent implements OnInit {
     }, 1000);
     this.steps++;
     localStorage.setItem('steps', this.steps + '');
+    this.voterService.postSetupStep(this.steps);
   }
 
   async onCreateCandidate(form: NgForm) {
     if (form.invalid) {
       return;
     }
-    this.ballot.getAccount();
+
+    for (let i = 0; i < this.candidates.length; i++) {
+      if (this.candidate.toUpperCase() === this.candidates[i]) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Se encontró una coincidencia',
+          text: 'No puede cargar dos candidatos con el mismo nombre'
+        });
+        return;
+      }
+    }
 
     Swal.fire({
       title: 'Creando candidato',
@@ -95,16 +118,15 @@ export class AdminConsoleComponent implements OnInit {
 
     Swal.showLoading();
 
-    await this.ballot.addCandidate(this.candidate)
+    await this.ballot.addCandidate(this.candidate.toUpperCase())
       .then(() => {
         Swal.close();
         Swal.fire({
           icon: 'success',
           title: 'Candidato creado',
-          text: 'Candidato [' + this.candidate.toUpperCase() + '] creado con éxito'
+          text: 'Candidato [' + this.candidate + '] creado con éxito'
         });
-        this.candidates.push(this.candidate);
-        console.log(this.candidates.length);
+        this.candidates.push(this.candidate.toUpperCase());
 
       }).catch((error) => {
         Swal.close();
@@ -119,9 +141,9 @@ export class AdminConsoleComponent implements OnInit {
 
   finishCandidates() {
     if (this.candidates.length > 1) {
-      console.log(this.candidates.length);
       this.steps++;
       localStorage.setItem('steps', this.steps + '');
+      this.voterService.postSetupStep(this.steps);
     } else {
       Swal.fire({
         icon: 'error',
@@ -136,7 +158,7 @@ export class AdminConsoleComponent implements OnInit {
       return;
     }
 
-    this.ballot.getAccount();
+    // this.ballot.getAccount();
     Swal.fire({
       title: 'Iniciando votación',
       text: 'Espere un momento...',
@@ -154,6 +176,9 @@ export class AdminConsoleComponent implements OnInit {
         });
         this.steps++;
         localStorage.setItem('steps', this.steps + '');
+        this.voterService.postSetupStep(this.steps);
+        this.showBallotEndTime();
+
       }).catch((error) => {
         Swal.close();
         Swal.fire({
@@ -164,9 +189,58 @@ export class AdminConsoleComponent implements OnInit {
       });
   }
 
-  async onEndBallot() {
+  showBallotEndTime() {
 
-    this.ballot.getAccount();
+    this.ballotEndTime = new Date();
+    this.ballotEndTime.setTime(this.ballotEndTime.getTime() + (this.ballotTime * 60000));
+
+    const day = this.ballotEndTime.getDate();
+    const month = this.ballotEndTime.getMonth() + 1;
+    const year = this.ballotEndTime.getFullYear();
+    const hours = this.ballotEndTime.getHours();
+    const minutes = this.ballotEndTime.getMinutes();
+    const seconds = this.ballotEndTime.getSeconds();
+
+    const formatDate = `Termina el día: ${day}-${month}-${year} a las ${hours}:${minutes}:${seconds}`;
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Finalización de la votación',
+      text: formatDate
+    });
+
+    localStorage.setItem('time', this.ballotEndTime.getTime() + '');
+    this.time = this.ballotEndTime.getTime();
+    this.voterService.postBallotLeftTime(this.ballotEndTime.getTime());
+
+  }
+
+  verifyEndTime() {
+
+    const currentDate = new Date();
+    const currentDateMilliseconds = currentDate.getTime();
+
+    if (localStorage.getItem('time')) {
+
+      const difference = this.time - currentDateMilliseconds;
+
+      if (difference > 0) {
+
+        const timeMessage = 'Aun quedan ' + Math.ceil(difference / 60000) + ' minutos de votación';
+        Swal.fire({
+          icon: 'info',
+          title: 'Espera un momento',
+          text: timeMessage + ''
+        });
+
+      } else {
+        this.allowToEnd = true;
+      }
+    }
+
+  }
+
+  async onEndBallot() {
 
     Swal.fire({
       title: 'Finalizando votación',
@@ -185,6 +259,8 @@ export class AdminConsoleComponent implements OnInit {
         });
         this.steps++;
         localStorage.setItem('steps', this.steps + '');
+        this.voterService.postSetupStep(this.steps);
+        this.voterService.postBallotEndConfirm();
 
       }).catch((error) => {
         Swal.close();
@@ -195,35 +271,46 @@ export class AdminConsoleComponent implements OnInit {
         });
         console.log(error);
       });
-
-
   }
 
   async onShowBallotResults() {
-
-    this.ballot.getAccount();
 
     Swal.fire({
       title: 'Haciendo conteo',
       text: 'Obteniendo reultado de la votación...',
     });
-
     Swal.showLoading();
 
-    await this.ballot.getFinalResult()
-      .then((result) => {
-        console.log(result);
+    await this.ballot.getTotalVoters()
+      .then((totalVoter) => {
+        this.totalVoters = totalVoter.toNumber();
+      }).catch((err) => {
+        console.error(err);
+      });
+
+    await this.ballot.getTotalDoneVotes()
+      .then((votesDone) => {
+        this.totalDoneVotes = votesDone.toNumber();
+      }).catch((err) => {
+        console.error(err);
+      });
+
+    await this.ballot.getCandidates()
+      .then((result: any[]) => {
+        this.resultados = result;
         Swal.close();
         Swal.fire({
           icon: 'success',
           title: 'Resultados obtendios',
           text: 'Puede ver los resultados de la votación ahora mismo'
         });
+        this.showResults = true;
+
         this.steps++;
         localStorage.setItem('steps', this.steps + '');
+        this.voterService.postSetupStep(this.steps);
       })
       .catch((error) => {
-        console.log(error);
         Swal.close();
         Swal.fire({
           icon: 'error',
@@ -235,52 +322,32 @@ export class AdminConsoleComponent implements OnInit {
 
   }
 
-  async onShowBallotWinner() {
+  logout() {
+    if (this.steps >= 5) {
 
-    this.ballot.getAccount();
-
-    Swal.fire({
-      title: 'Obteniendo ganador',
-      text: 'Obteniendo ganador de la votación...',
-    });
-
-    Swal.showLoading();
-
-    await this.ballot.getFinalResult()
-      .then((result) => {
-        console.log(result );
-        Swal.close();
-        Swal.fire({
-          icon: 'success',
-          title: 'Ganador',
-          text: 'Puede ver el/la ganador de la votación ahora mismo'
-        });
-        this.steps++;
-        localStorage.setItem('steps', this.steps + '');
-      })
-      .catch((error) => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al obtener el ganador...'
-        });
-        console.log(error);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Resetear consola',
+        text: 'Una vez hayas salido se reiniciará el Contrato de votaciones',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, salir'
+      }).then(async (result) => {
+        if (result.value) {
+          this.auth.logout();
+          this.router.navigateByUrl('/admin');
+          localStorage.removeItem('steps');
+          localStorage.removeItem('time');
+          this.voterService.postSetupStep(1);
+        }
       });
 
-  }
-
-  logout() {
-    if (this.stepsToken > 5) {
-      this.auth.logout();
-      this.router.navigateByUrl('/admin');
-      localStorage.removeItem('steps');
-
-    } else if (this.stepsToken < 5) {
+    } else if (this.steps < 5) {
       Swal.fire({
         icon: 'info',
         title: 'Vuelve pronto',
-        text: 'Recuerda que debes seguir configurando el proceso electoral'
+        text: 'Recuerda que debes seguir configurando el proceso electoral hasta su finalización'
       });
       this.auth.logout();
       this.router.navigateByUrl('/admin');
@@ -294,36 +361,38 @@ export class AdminConsoleComponent implements OnInit {
     }
   }
 
-  stepState(): number {
+  stepState() {
     return this.steps;
   }
-
-  async deposit(value) {
-    await this.ballot.depositBalance(value);
-  }
-
-  async withdraw() {
-    await this.ballot.withdraw();
-  }
-
-  async getContractBalance() {
-
-    const balance = await this.ballot.getContractBalance();
-    Swal.fire({
-      title: 'Balance del contrato',
-      text: balance + ''
-    });
-  }
-
 
   leerToken() {
     if (localStorage.getItem('steps')) {
       this.stepsToken = localStorage.getItem('steps');
       this.steps = this.stepsToken;
+
+    } else if (!localStorage.getItem('steps')) {
+
+      this.voterService.getSetupStep()
+      .subscribe((steps: number) => {
+        this.steps = steps;
+      }, (error) => console.log(error));
+
     } else {
       this.stepsToken = '';
       this.steps = 1;
     }
-    return this.stepsToken;
+    return this.steps;
   }
+
+  leerTokenTime() {
+    if (localStorage.getItem('time')) {
+      this.timeToken = localStorage.getItem('time');
+      this.time = this.timeToken;
+    } else {
+      this.timeToken = '';
+      this.time = 0;
+    }
+    return this.timeToken;
+  }
+
 }

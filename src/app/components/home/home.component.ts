@@ -7,13 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  web3: any;
-  ballotContract: any;
-  ballotFunction: any;
-  candidates: any[];
-
   constructor() {
-
   }
 
   ngOnInit() {

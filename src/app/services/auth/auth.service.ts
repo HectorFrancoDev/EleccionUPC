@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UserModel } from '../../models/user.model';
-import { map } from 'rxjs/operators';
 import { VotersService } from '../voters/voters.service';
 
 @Injectable({
@@ -14,22 +13,7 @@ export class AuthService {
   adminToken: string;
   logged: boolean;
   loggedAdmin: boolean;
-
-  voters = [] = [];
-  votersPrueba = [
-    {
-      displayName: 'password: <<xBf9825mS>>',
-      email: 'hector19971997@gmail.com',
-      password: 'xBf9825mS',
-      returnSecureToken: true
-    },
-    {
-      displayName: 'password: <<gf8620PM>>',
-      email: 'hector19971997@hotmail.com',
-      password: 'gf8620PM',
-      returnSecureToken: true
-    },
-  ];
+  voters = [];
 
   constructor(private http: HttpClient, private voterService: VotersService) {
     this.leerToken();
@@ -71,7 +55,6 @@ export class AuthService {
     return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${this.apiKey}`, { idToken });
   }
 
-
   sendEmailVerification(idToken) {
     const verifyObject = {
       requestType: 'VERIFY_EMAIL',
@@ -82,6 +65,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('voted');
     this.userToken = undefined;
   }
 

@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth/auth.service';
 
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { BallotService } from '../../services/ballot/ballot.service';
 
 @Component({
   selector: 'app-admin',
@@ -16,7 +17,7 @@ export class AdminComponent implements OnInit {
   admin: UserModel = new UserModel();
 
   constructor(private auth: AuthService,
-    private router: Router) { }
+              private router: Router) { }
 
   ngOnInit() {
   }
@@ -36,16 +37,16 @@ export class AdminComponent implements OnInit {
     this.auth.login(this.admin)
       .subscribe((token: any) => {
 
-          if (token.localId === 'GDmfE9aZD1YRlIPP7wj80f2EnSE2') {
-            this.getUserState(token.idToken);
-          } else {
-            Swal.close();
-            Swal.fire({
-              icon: 'error',
-              title: 'Usuario no encontrado',
-              text: 'No estás registrado'
-            });
-          }
+        if (token.localId === 'WFNDArULuYRQGDa5Kl36eXusMht1') {
+          this.getUserState(token.idToken);
+        } else {
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'Usuario no encontrado',
+            text: 'No estás registrado'
+          });
+        }
 
       }, (error) => {
         Swal.close();
@@ -58,7 +59,7 @@ export class AdminComponent implements OnInit {
 
   }
 
-  private getUserState(idToken) {
+  getUserState(idToken) {
     this.auth.getUserState(idToken)
       .subscribe((user: any) => {
         const verify: boolean = user.users[0].emailVerified;
