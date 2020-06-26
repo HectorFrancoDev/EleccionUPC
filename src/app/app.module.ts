@@ -14,7 +14,7 @@ import { AdminConsoleComponent } from './components/admin-console/admin-console.
 
 import { APP_ROUTING } from './routes';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common'
+import { DatePipe } from '@angular/common';
 
 // Services
 import { HttpClientModule } from '@angular/common/http';

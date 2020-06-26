@@ -41,13 +41,14 @@ export class AuthService {
 
   register() {
     this.voters.forEach((voter) => {
-      this.reg(voter)
-        .subscribe((token: any) => {
-          this.sendEmailVerification(token.idToken)
-            .subscribe(() => { }, (error) => console.log(error));
+      setTimeout(() => {
+        this.reg(voter)
+          .subscribe((token: any) => {
+            this.sendEmailVerification(token.idToken)
+              .subscribe(() => { }, (error) => console.log(error));
 
-        }, (error) => console.log(error));
-
+          }, (error) => console.log(error));
+      }, 500);
     });
   }
 

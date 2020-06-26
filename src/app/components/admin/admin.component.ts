@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth/auth.service';
 
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-import { BallotService } from '../../services/ballot/ballot.service';
+
 
 @Component({
   selector: 'app-admin',
